@@ -1,28 +1,22 @@
 import pytest
 
-from atom2seq.classes import Atom, Node
+from atom2seq.classes import Atom
+from atom2seq.classes import IndexedObject as IO
+from atom2seq.classes import Node
 
 
 @pytest.fixture
 def nodes():
+    IO.used_indices = {}
     node1 = Node(
-        "CH2",
         {
-            Atom("C", (0, 0, 0), 0, 0),
-            Atom("H", (1, 0, 0), 1, 0),
-            Atom("H", (0, 1, 0), 2, 0),
+            Atom("C", (0, 0, 0)),
+            Atom("H", (1, 0, 0)),
+            Atom("H", (0, 1, 0)),
         },
         {(0, 1), (0, 2)},
-        0,
-        0,
     )
-    node2 = Node(
-        "SH",
-        {Atom("S", (0, 0, 2), 0, 1), Atom("H", (1, 0, 2), 1, 1)},
-        {(0, 1)},
-        1,
-        0,  # noqa
-    )
+    node2 = Node({Atom("S", (0, 0, 2)), Atom("H", (1, 0, 2))}, {(4, 5)})
     return (node1, node2)
 
 
@@ -33,10 +27,10 @@ def test_get_symbol(nodes):
 
 def test_get_atoms(nodes):
     node1, node2 = nodes
-    assert node1.get_atoms == {
-        Atom("C", (0, 0, 0), 0, 0),
-        Atom("H", (1, 0, 0), 1, 0),
-        Atom("H", (0, 1, 0), 2, 0),
+    assert node1.get_atoms() == {
+        Atom("C", (0, 0, 0)),
+        Atom("H", (1, 0, 0)),
+        Atom("H", (0, 1, 0)),
     }
 
 
@@ -47,22 +41,23 @@ def test_eq(nodes):
 
 def test_set_atoms(nodes):
     node1, node2 = nodes
-    node1.set_atoms({Atom("S", (0, 0, 0), 0, 1), Atom("H", (1, 0, 0), 1, 1)})
+    node1.set_atoms({Atom("S", (0, 0, 2)), Atom("H", (1, 0, 2))})
     assert (node1.get_atoms() == node2.get_atoms()) and (not node1.get_bonds())
 
 
 def test_add_atom(nodes):
     node1, node2 = nodes
+    print(f"{IO.used_indices=}, {Atom.used_indices=}, {Node.used_indices=}")
     node1.add_atom("H", (0, 0, 1))
     assert (
         node1.get_atoms()
         == {
-            Atom("C", (0, 0, 0), 0, 0),
-            Atom("H", (1, 0, 0), 1, 0),
-            Atom("H", (0, 1, 0), 2, 0),
-            Atom("H", (0, 0, 1), 3, 0),
+            Atom("C", (0, 0, 0)),
+            Atom("H", (1, 0, 0)),
+            Atom("H", (0, 1, 0)),
+            Atom("H", (0, 0, 1)),
         }
-    ) and (node1.symbol == "CH3")
+    ) and (node1.get_symbol() == "CH3")
 
 
 def test_del_atom(nodes):
@@ -71,10 +66,10 @@ def test_del_atom(nodes):
     assert (
         node1.get_atoms()
         == {
-            Atom("C", (0, 0, 0), 0, 0),
-            Atom("H", (1, 0, 0), 1, 0),
+            Atom("C", (0, 0, 0)),
+            Atom("H", (1, 0, 0)),
         }
-    ) and node1.symbol == "CH"
+    ) and node1.get_symbol() == "CH"
 
 
 def test_get_bonds(nodes):
@@ -107,41 +102,41 @@ def test_check_bond(nodes):
 
 def test_get_idx(nodes):
     node1, node2 = nodes
-    assert (node1.get_idx() == 0) and (node2.get_idx() == 1)
+    assert (node1.get_idx() == 3) and (node2.get_idx() == 6)
 
 
 def test_set_idx(nodes):
     node1, node2 = nodes
-    node1.set_idx(2)
-    node2.set_idx(3)
-    assert (node1.get_idx() == 2) and (node2.get_idx() == 3)
+    node1.set_idx(7)
+    node2.set_idx(8)
+    assert (node1.get_idx() == 7) and (node2.get_idx() == 8)
 
 
 def test_get_parent(nodes):
     node1, node2 = nodes
-    assert node1.get_parent() == node2.get_parent() == 0
+    assert node1.get_parent() == node2.get_parent() == -1
 
 
 def test_set_parent(nodes):
     node1, node2 = nodes
     node1.set_parent(1)
     node2.set_parent(2)
-    assert (node1.get_parent() == 1) and (node2.get_parent == 2)
+    assert (node1.get_parent() == 1) and (node2.get_parent() == 2)
 
 
 def test_get_rep(nodes):
     node1, node2 = nodes
-    assert (node1.get_rep() == node1.get_atoms()[0]) and (
-        node2.get_rep() == node2.get_atoms()[0]
+    assert (node1.get_rep() == node1.used_indices[0]) and (
+        node2.get_rep() == node2.used_indices[4]
     )
 
 
 def test_set_rep(nodes):
     node1, node2 = nodes
-    node1.set_rep(2)
-    node2.set_rep(1)
-    assert (node1.get_rep() == node1.get_atoms()[2]) and (
-        node2.get_rep() == node2.get_atoms()[1]
+    node1.set_rep(1)
+    node2.set_rep(5)
+    assert (node1.get_rep() == node1.used_indices[1]) and (
+        node2.get_rep() == node2.used_indices[5]
     )
 
 

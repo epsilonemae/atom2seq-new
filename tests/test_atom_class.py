@@ -1,12 +1,14 @@
 import pytest
 
 from atom2seq.classes import Atom
+from atom2seq.classes import IndexedObject as IO
 
 
 @pytest.fixture
 def atoms() -> tuple[Atom]:
-    atom1 = Atom("C", (0, 0, 0), 0, 0)
-    atom2 = Atom("H", (0, 1, 0), 1, 0)
+    IO.used_indices = {}
+    atom1 = Atom("C", (0, 0, 0))
+    atom2 = Atom("H", (0, 1, 0))
     return (atom1, atom2)
 
 
@@ -15,19 +17,14 @@ def test_symbol(atoms):
     assert (atom1.symbol == "C") and (atom2.symbol == "H")
 
 
-def test_coords1(atoms):
+def test_coords(atoms):
     atom1, atom2 = atoms
     assert (atom1.coords == (0, 0, 0)) and (atom2.coords == (0, 1, 0))
 
 
-def test_repr1(atoms):
+def test_repr(atoms):
     atom1, atom2 = atoms
-    assert repr(atom1) == "Atom('C', (0, 0, 0), 0, 0)"
-
-
-def test_repr2(atoms):
-    atom1, atom2 = atoms
-    assert repr(atom2) == "Atom('H', (0, 1, 0), 1, 0)"
+    assert repr(atom1) == "Atom('C', (0, 0, 0), -1, 0)"
 
 
 def test_get_idx(atoms):
@@ -44,7 +41,7 @@ def test_set_idx(atoms):
 
 def test_get_parent(atoms):
     atom1, atom2 = atoms
-    assert (atom1.get_parent() == 0) and (atom2.get_parent() == 0)
+    assert atom1.get_parent() == atom2.get_parent() == -1
 
 
 def test_set_parent(atoms):
@@ -56,7 +53,8 @@ def test_set_parent(atoms):
 
 def test_eq(atoms):
     atom1, atom2 = atoms
-    assert (atom1 == atom1) and (atom2 == atom2) and (atom1 != atom2)
+    atom3 = Atom(atom1.symbol, atom1.coords)
+    assert (atom1 == atom3) and (atom1 != atom2)
 
 
 def test_dist(atoms):
