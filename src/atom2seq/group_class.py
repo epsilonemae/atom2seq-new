@@ -154,6 +154,10 @@ class Group(IndexedObject):
         """Returns the symbol of this group."""
         return self._symbol
 
+    def get_clusters(self) -> None:
+        """Returns the clusters within this group."""
+        return self._clusters
+
     def check_bond(self, idx1, idx2):
         """Checks if two given atoms are bonded."""
         for bond in self._bonds:

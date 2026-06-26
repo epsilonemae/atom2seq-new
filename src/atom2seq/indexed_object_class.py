@@ -4,14 +4,14 @@ class IndexedObject:
 
     used_indices = {}
 
-    def __init__(self, idx: int = -1):
+    def __init__(self, parent: int = -1, idx: int = -1):
+        self._parent = parent
         if idx == -1:
             idx = len(self.used_indices)
         if idx not in self.used_indices.keys():
             self._idx = idx
             self.used_indices[idx] = self
         else:
-            print(f"{self=}, {self.used_indices=}")
             raise ValueError(f"The index {idx} is already in use.")
 
     def __eq__(self, other) -> bool:
@@ -56,3 +56,15 @@ class IndexedObject:
             self.used_indices[new_idx] = self
         else:
             raise ValueError(f"The index {new_idx} is already in use.")
+
+    def get_parent(self):
+        return self.used_indices[self._parent]
+
+    def set_parent(self, new_parent):
+        if new_parent in self.used_indices.keys():
+            self._parent = new_parent
+        else:
+            raise ValueError(
+                f"There is no object with index {new_parent}, so it cannot "
+                f"be assigned as the object with index {self._idx}'s parent."  # noqa
+            )
