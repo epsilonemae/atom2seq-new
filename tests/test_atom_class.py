@@ -1,12 +1,12 @@
 import pytest
 
-from atom2seq.classes import Atom
-from atom2seq.classes import IndexedObject as IO
+from atom2seq.atom_class import Atom
 
 
 @pytest.fixture
 def atoms() -> tuple[Atom]:
-    IO.used_indices = {}
+    reset = Atom("X", (0, 0, 0))
+    reset._reset_used_indices()
     atom1 = Atom("C", (0, 0, 0))
     atom2 = Atom("H", (0, 1, 0))
     return (atom1, atom2)
@@ -25,18 +25,6 @@ def test_coords(atoms):
 def test_repr(atoms):
     atom1, atom2 = atoms
     assert repr(atom1) == "Atom('C', (0, 0, 0), -1, 0)"
-
-
-def test_get_idx(atoms):
-    atom1, atom2 = atoms
-    assert (atom1.get_idx() == 0) and (atom2.get_idx() == 1)
-
-
-def test_set_idx(atoms):
-    atom1, atom2 = atoms
-    atom1.set_idx(2)
-    atom2.set_idx(3)
-    assert (atom1.get_idx() == 2) and (atom2.get_idx() == 3)
 
 
 def test_get_parent(atoms):
