@@ -1,31 +1,14 @@
-from atom2seq.cluster_class import Cluster
-from atom2seq.indexed_object_class import IndexedObject
+from atom2seq.indexed_graph_class import IndexedGraph
 
 
-class Group(IndexedObject):
-    def __init__(
-        self,
-        clusters: set[Cluster],
-        bonds: set[tuple[int]],
-        parent: int = -1,
-        idx: int = -1,  # noqa
-    ):  # noqa
-        super().__init__(idx)
-        self._clusters = clusters
-        self._bonds = bonds
-        self._parent = parent
-        self._symbol = ""
-        self._rep = False
-        for cluster in self._clusters:
-            cluster.set_parent(self._idx)
+class Group(IndexedGraph):
+    def _cleanup(self):
+        self._update_cluster_parentage()
         self._update_symbol_determine_rep()
-        self._cleanup_bonds()
 
-    def _cleanup_bonds(self):
-        """Sets each bond to be strictly increasing."""
-        new_bonds = set([])
-        for bond in self._bonds:
-            new_bonds.add((min(bond), max(bond)))
+    def _update_cluster_parentage(self):
+        for cluster in self._vertices:
+            cluster.set_parent(self._idx)
 
     def _update_symbol_determine_rep(self):
         """Automatically assigns this group a symbol corresponding to one of
@@ -145,22 +128,14 @@ class Group(IndexedObject):
                 out += f"({sym}){num_syms[sym]}"
             self._symbol = out
 
-    def cluster_list(self):
-        """Returns a sorted list copy of the set of clusters within this
-        group."""
-        return sorted(list(self._clusters))
-
     def get_symbol(self):
         """Returns the symbol of this group."""
         return self._symbol
 
-    def get_clusters(self) -> None:
-        """Returns the clusters within this group."""
-        return self._clusters
-
-    def check_bond(self, idx1, idx2):
-        """Checks if two given atoms are bonded."""
-        for bond in self._bonds:
-            if bond[0] == min(idx1, idx2) and bond[1] == max(idx1, idx2):
-                return True
-        return False
+    def get_atoms(self):
+        atoms = set([])
+        for cluster in self._vertices:
+            atoms += cluster.get_vertices()
+        return atoms
+    
+    def

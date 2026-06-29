@@ -103,79 +103,8 @@ def test_get_symbol(carbonyl, carboxylic_acid, amide, phenyl, phenol):
     )
 
 
-def test_get_clusters(carbonyl):
-    assert carbonyl.get_clusters() == {
-        Cluster({Atom("C", (0, 0, 0))}, set([])),
-        Cluster({Atom("O", (1, 0, 0))}, set([])),
-    }
-
-
-def test_set_clusters(carbonyl):
-    carbonyl.set_clusters(
-        {
-            Cluster({Atom("C", (1, 0, 0))}, set([])),
-            Cluster({Atom("O", (2, 0, 0))}, set([])),
-        }
-    )
-    assert (
-        carbonyl.get_clusters()
-        == {
-            Cluster({Atom("C", (1, 0, 0))}, set([])),
-            Cluster({Atom("O", (2, 0, 0))}, set([])),
-        }
-    ) and (not carbonyl.get_bonds())
-
-
-def test_add_cluster(carbonyl):
-    carbonyl.add_cluster({Atom(("N", (1, 1, 1)))}, set([]))
-    assert carbonyl.get_clusters() == {
-        Cluster({Atom("C", (0, 0, 0))}, set([])),
-        Cluster({Atom("O", (1, 0, 0))}, set([])),
-        Cluster({Atom("N", (1, 1, 1))}, set([])),
-    }
-
-
-def test_del_cluster(carbonyl):
-    carbonyl.del_cluster(1)
-    assert carbonyl.get_clusters() == {
-        Cluster({Atom("O", (1, 0, 0))}, set([])),
-    }
-
-
 def test_merge_clusters(carbonyl):
     carbonyl.merge_clusters(1, 3)
     assert carbonyl.get_clusters() == {
         Cluster({Atom("C", (1, 0, 0)), Atom("O", (2, 0, 0))}, {0, 1})
     }
-
-
-def test_get_bonds(carbonyl):
-    assert carbonyl.get_bonds() == {(1, 3)}
-
-
-def test_set_bonds(carboxylic_acid):
-    carboxylic_acid.set_bonds({(1, 3), (3, 6)})
-    assert carboxylic_acid.get_bonds() == {(1, 3), (3, 6)}
-
-
-def test_add_bond(carboxylic_acid):
-    carboxylic_acid.add_bond(3, 6)
-    assert carboxylic_acid.get_bonds() == {(1, 3), (1, 6), (3, 6)}
-
-
-def test_del_bond(carbonyl):
-    carbonyl.del_bond(1, 3)
-    assert carbonyl.get_bonds() == set([])
-
-
-def test_check_bond(carbonyl):
-    assert carbonyl.check_bond(1, 3)
-
-
-def get_rep(carbonyl):
-    assert carbonyl.get_rep() == 1
-
-
-def set_rep(carboxylic_acid):
-    carboxylic_acid.set_rep(6)
-    assert carboxylic_acid.get_rep() == 6
