@@ -5,21 +5,21 @@ class Cluster(IndexedGraph):
     """A class to represent a cluster of atoms, typically a non-hydrogen
     surrounded by hydrogens."""
 
-    def __repr__(self):
-        return f"Cluster({self._atoms}, {self._bonds}, {self._parent}, {self._idx})"  # noqa
+    def __repr__(self) -> str:
+        return f"Cluster({self._vertices}, {self._edges}, {self._parent}, {self._idx})"  # noqa
 
-    def _tuple(self):
+    def _tuple(self) -> tuple:
         """Returns a tuple representing this cluster. Used for checking
         equality and hashing."""
         return (
             self._symbol,
-            tuple(sorted(tuple(self._atoms))),
-            tuple(sorted(tuple(self._bonds))),
+            tuple(sorted(tuple(self._vertices))),
+            tuple(sorted(tuple(self._edges))),
         )  # noqa
 
-    def _cleanup(self):
+    def _cleanup(self) -> None:
         super()._cleanup()
-        self._atom_parentage_and_representative()
+        self._update_representative()
         self._update_symbol()
 
     def _update_symbol(self) -> None:
@@ -29,7 +29,7 @@ class Cluster(IndexedGraph):
         # certain symbols.
         symbol = ""
         num_syms = {}
-        for atom in self._atoms:
+        for atom in self._vertices:
             # Adds one to the current value for this atom's symbol (if it
             # doesn't have one, sets it to one)
             if atom.symbol in num_syms.keys():
@@ -50,22 +50,21 @@ class Cluster(IndexedGraph):
                 symbol += str(num_syms["H"])
         self._symbol = symbol
 
-    def _atom_parentage_and_representative(self):
+    def _update_representative(self) -> None:
         """Sets the parent for all atoms within this cluster to this cluster's
         index. Also updates the representative atom for this cluster."""
-        # Loops over all atoms, updates their parent, and if they are not a
-        # hydrogen makes them thcluster's new representative (for the intended
-        # use case, there will only be one non-hydrogen atom.).
-        for atom in self._atoms:
-            atom.set_parent(self._idx)
+        # Loops over all atoms, and if they are not a hydrogen, makes them the
+        # cluster's new representative (for the intended use case, there will
+        # only be one non-hydrogen atom.).
+        for atom in self._vertices:
             if atom.symbol != "H":
-                self._rep = atom
+                self._rep = atom.get_idx()
 
     def get_symbol(self) -> str:
         """Returns this cluster's symbol."""
         return self._symbol
 
-    def dist(self, other):
+    def dist(self, other) -> float:
         """Returns the distance from this cluster's representative atom to
         another cluster's representative atom."""
         self_rep = self.used_indices[self._rep]

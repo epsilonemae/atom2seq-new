@@ -10,35 +10,17 @@ class Atom(IndexedObject):
     def __init__(
         self, symbol: str, coords: tuple[float], parent: int = -1, idx: int = -1  # noqa
     ):  # noqa
-        print(f"{symbol}, {coords}, {parent}")
         super().__init__(idx)
         self.symbol = symbol
         self.coords = coords
-        self._parent = parent
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return (
             f"Atom('{self.symbol}', {self.coords}, {self._parent}, {self._idx})"  # noqa
         )
 
-    def _tuple(self):
+    def _tuple(self) -> tuple:
         return (self.symbol, self.coords)
-
-    def get_idx(self) -> int:
-        """Returns the index of the atom."""
-        return self._idx
-
-    def set_idx(self, new_idx: int) -> None:
-        """Sets the index of the atom to the integer passed in."""
-        self._idx = new_idx
-
-    def get_parent(self) -> int:
-        """Returns the index of this atom's parent."""
-        return self._parent
-
-    def set_parent(self, new_parent: int) -> None:
-        """Sets the atom's parent to the object with the index passed in."""
-        self._parent = new_parent
 
     def dist(self, other) -> float:
         """Returns the distance from this atom to another atom."""

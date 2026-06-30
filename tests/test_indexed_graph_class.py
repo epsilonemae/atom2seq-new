@@ -7,6 +7,7 @@ from atom2seq.indexed_object_class import IndexedObject as IO
 @pytest.fixture
 def graph():
     IO()._reset_used_indices()
+    IO()._reset_used_indices()
     graph = IndexedGraph(
         {IO(), IO(), IO()},
         {(0, 1), (0, 2)},
@@ -39,7 +40,7 @@ def test_get_vertices(graph):
 def test_set_vertices(graph):
     graph.set_vertices({IO()})
     IO()._reset_used_indices()
-    assert (graph.get_vertices() == {IO(idx=3)}) and (not graph.get_edges())
+    assert (graph.get_vertices() == {IO(idx=4)}) and (not graph.get_edges())
 
 
 def test_add_vertex(graph):
@@ -49,7 +50,7 @@ def test_add_vertex(graph):
         IO(idx=0),
         IO(idx=1),
         IO(idx=2),
-        IO(idx=3),
+        IO(idx=4),
     }
 
 

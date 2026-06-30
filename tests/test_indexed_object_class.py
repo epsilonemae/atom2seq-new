@@ -5,8 +5,7 @@ from atom2seq.indexed_object_class import IndexedObject as IO
 
 @pytest.fixture
 def ios():
-    reset = IO()
-    reset._reset_used_indices()
+    IO()._reset_used_indices()
     io0 = IO()
     io1 = IO()
     io2 = IO()
