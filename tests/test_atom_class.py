@@ -34,6 +34,7 @@ def test_get_parent(atoms):
 
 def test_set_parent(atoms):
     atom1, atom2 = atoms
+    Atom("X", (10, 10, 10), idx=2)
     atom1.set_parent(1)
     atom2.set_parent(2)
     assert (atom1.get_parent() == 1) and (atom2.get_parent() == 2)

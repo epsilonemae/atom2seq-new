@@ -32,12 +32,13 @@ class IndexedGraph(IndexedObject):
         for vertex in self._vertices:
             vertex.set_parent(self._idx)
         new_edges = set([])
+        print(f"in super()._cleanup: {self._edges=}, {self=}")
         for edge in self._edges:
             if (edge[0] not in self.vertex_indices()) or (
                 edge[1] not in self.vertex_indices()
             ):
                 raise ValueError(
-                    f"The edge {edge} contains the index of an object that is"
+                    f"The edge {edge} contains the index of an object that is "
                     "not a child of this graph."
                 )
             new_edges.add((min(edge), max(edge)))
@@ -46,7 +47,7 @@ class IndexedGraph(IndexedObject):
     def _tuple(self) -> tuple:
         return (
             tuple(sorted(tuple(self._vertices))),
-            tuple(sorted(tuple(self._edges))),
+            tuple(sorted(self._edges)),
         )  # noqa
 
     def vertex_indices(self) -> set:

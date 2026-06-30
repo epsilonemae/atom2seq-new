@@ -3,11 +3,6 @@ from atom2seq.indexed_graph_class import IndexedGraph
 
 
 class FxnalGroup(IndexedGraph):
-    def __init__(self, clusters, bonds, parent: int = -1, idx: int = -1):
-        super().__init__(clusters, bonds, parent, idx)
-        self._symbol = ""
-        self._rep = -1
-
     def __repr__(self) -> str:
         return f"Group({self._vertices}, {self._edges}, {self._parent}, {self._idx})"  # noqa
 
@@ -33,7 +28,7 @@ class FxnalGroup(IndexedGraph):
         if len(self._vertices) == 1:
             print("len(self._vertices) == 1")
             self._symbol = self.vertex_list()[0].get_symbol()
-            self._rep = self.vertex_list()[0]
+            self._rep = 0
         # If there are two clusters in this functional group, the only FG we
         # care about is carbonyl, so we check for it.
         elif len(self._vertices) == 2:
@@ -46,7 +41,7 @@ class FxnalGroup(IndexedGraph):
                     print("self.check_edge((carbon, oxygen))")
                     self._symbol = "C=O"
                     print(f"{self.get_symbol()=}")
-                    self._rep = self.vertex_list()[carbon]
+                    self._rep = carbon
         # If there are three clusters in this functional group, the only FGs we
         # care about are amide and carboxylic acid, so we check for those.
         elif len(self._vertices) == 3:
@@ -61,14 +56,14 @@ class FxnalGroup(IndexedGraph):
                         (carbon, amine)
                     ):
                         self._symbol = "Amd"
-                        self._rep = self.vertex_list()[carbon]
+                        self._rep = carbon
                 elif "OH" in symbols:
                     hydroxyl = self.vertex_list()[symbols.index("OH")].get_idx()  # noqa
                     if self.check_edge((carbon, oxygen)) and self.check_edge(
                         (carbon, hydroxyl)
                     ):
                         self._symbol = "COOH"
-                        self._rep = self.vertex_list()[carbon]
+                        self._rep = carbon
         # If there are six clusters in this functional group, the only FG we
         # care about is phenyl, so we check for it.
         elif len(self._vertices) == 6:
@@ -90,7 +85,7 @@ class FxnalGroup(IndexedGraph):
                 chch_bonds /= 2
                 if (chch_bonds == 4) and (chc_bonds == 2):
                     self._symbol = "Ph"
-                    self._rep = self.vertex_list()[carbon]
+                    self._rep = carbon
         # If there are seven clusters in this functional group, the only FG we
         # care about is phenol, so we check for it.
         elif len(self._vertices) == 7:
@@ -126,7 +121,7 @@ class FxnalGroup(IndexedGraph):
                     self._symbol = "PhOH"
                     for carbon in carbons:
                         if self.check_edge((carbon, hydroxyl)):
-                            self._rep = self.vertex_list()[carbon]
+                            self._rep = carbon
         else:
             # If this functional group has more than one cluster and isn't any
             # of our five functional groups, we assign it a standard name based
@@ -168,6 +163,8 @@ class FxnalGroup(IndexedGraph):
                 new_cluster = Cluster(atoms, bonds)
                 # Finds all nodes clusters to these two clusters.
                 bonded = self.get_adjacent(idx1).union(self.get_adjacent(idx2))
+                bonded.remove(idx1)
+                bonded.remove(idx2)
                 # Deletes these two clusters.
                 self.del_vertex(idx1)
                 self.del_vertex(idx2)
@@ -175,7 +172,11 @@ class FxnalGroup(IndexedGraph):
                 # Adds the new cluster and bonds it to all clusters that one of
                 # the original two clusters was bonded to.
                 self.add_vertex(new_cluster)
+                print(f"in merge_clusters: {self._edges=}")
+                print(self)
                 for idx in bonded:
+                    print(self.vertex_indices())
+                    print(f"Bonding {idx} and {new_idx}")
                     self.add_edge((idx, new_idx))
             else:
                 raise ValueError(

@@ -116,14 +116,18 @@ def test_rep_assignment(carbonyl, carboxylic_acid, amide, phenyl, phenol):
 
 
 def test_get_atoms(carbonyl):
-    assert carbonyl.get_atoms() == {Atom("C", (1, 0, 0)), Atom("O", (2, 0, 0))}
+    assert carbonyl.get_atoms() == {Atom("C", (0, 0, 0)), Atom("O", (1, 0, 0))}
 
 
 def test_merge_clusters(carbonyl):
     carbonyl.merge_clusters(1, 3)
-    assert carbonyl.get_vertices() == {
-        Cluster({Atom("C", (1, 0, 0)), Atom("O", (2, 0, 0))}, {0, 1})
-    }
+    # instead of dealing with the complications of equality with unique
+    # indices, we check the repr to check it got merged properly.
+    assert (
+        repr(carbonyl)
+        == "Group({Cluster({Atom('O', (1, 0, 0), 5, 2), Atom('C', (0, 0, 0), "
+        "5, 0)}, {(0, 2)}, 4, 5)}, set(), -1, 4)"
+    )
 
 
 def test_dist(carbonyl, carboxylic_acid):
