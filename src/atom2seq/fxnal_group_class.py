@@ -3,6 +3,16 @@ from atom2seq.indexed_graph_class import IndexedGraph
 
 
 class FxnalGroup(IndexedGraph):
+    def __init__(
+        self,
+        clusters: set[Cluster],
+        bonds: set[tuple[int]],
+        parent: int = -1,
+        idx: int = -1,
+    ):
+        super().__init__(clusters, bonds, parent, idx)
+        self._symbol = ""
+
     def __repr__(self) -> str:
         return f"Group({self._vertices}, {self._edges}, {self._parent}, {self._idx})"  # noqa
 
