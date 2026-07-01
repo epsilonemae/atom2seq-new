@@ -24,6 +24,11 @@ class Atom(IndexedObject):
 
     def dist(self, other) -> float:
         """Returns the distance from this atom to another atom."""
+        print(f"{self=}, {self.coords=}, {other}, {other.coords}")
+        print(
+            f"In Atom.dist: Finding the distance from {self.coords} to "
+            f"{other.coords}"
+        )
         return m.sqrt(
             (self.coords[0] - other.coords[0]) ** 2
             + (self.coords[1] - other.coords[1]) ** 2

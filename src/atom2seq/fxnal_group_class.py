@@ -14,7 +14,10 @@ class FxnalGroup(IndexedGraph):
         self._symbol = ""
 
     def __repr__(self) -> str:
-        return f"Group({self._vertices}, {self._edges}, {self._parent}, {self._idx})"  # noqa
+        return (
+            f"Group({self.vertex_list()}, {sorted(list(self._edges))}, "
+            f"{self._parent}, {self._idx})"
+        )  # noqa
 
     def _cleanup(self) -> None:
         super()._cleanup()
@@ -32,122 +35,132 @@ class FxnalGroup(IndexedGraph):
         # Creates a list of the symbols of all of the clusters in this
         # functional group.
         symbols = [cluster.get_symbol() for cluster in self.vertex_list()]
+        # Creates a dictionary of what to call if there are a certain amount of
+        # clusters. This way of doing a long if-elif-elif-... statement was
+        # taken from https://stackoverflow.com/questions/17166074/ answered by
+        # user Aya.
+        call_this = {
+            1: self._label_single,
+            2: self._find_carbonyl,
+            3: self._find_amide_or_cooh,
+            6: self._find_phenyl,
+            7: self._find_phenol,
+        }
         print(f"{self=}, {symbols=}")
-        # If there is one cluster in this functional group, they have the same
-        # symbol.
-        if len(self._vertices) == 1:
-            print("len(self._vertices) == 1")
-            self._symbol = self.vertex_list()[0].get_symbol()
-            self._rep = 0
-        # If there are two clusters in this functional group, the only FG we
-        # care about is carbonyl, so we check for it.
-        elif len(self._vertices) == 2:
-            print("len(self._vertices) == 2")
-            if ("C" in symbols) and ("O" in symbols):
-                print('("C" in symbols) and ("O" in symbols)')
-                carbon = self.vertex_list()[symbols.index("C")].get_idx()
-                oxygen = self.vertex_list()[symbols.index("O")].get_idx()
-                if self.check_edge((carbon, oxygen)):
-                    print("self.check_edge((carbon, oxygen))")
-                    self._symbol = "C=O"
-                    print(f"{self.get_symbol()=}")
-                    self._rep = carbon
-        # If there are three clusters in this functional group, the only FGs we
-        # care about are amide and carboxylic acid, so we check for those.
-        elif len(self._vertices) == 3:
-            # They both have a carbon-only cluster and an oxygen-only cluster
-            # as they both contain a carbonyl.
-            if ("C" in symbols) and ("O" in symbols):
-                carbon = self.vertex_list()[symbols.index("C")].get_idx()
-                oxygen = self.vertex_list()[symbols.index("O")].get_idx()
-                if "NH2" in symbols:
-                    amine = self.vertex_list()[symbols.index("NH2")].get_idx()
-                    if self.check_edge((carbon, oxygen)) and self.check_edge(
-                        (carbon, amine)
-                    ):
-                        self._symbol = "Amd"
-                        self._rep = carbon
-                elif "OH" in symbols:
-                    hydroxyl = self.vertex_list()[symbols.index("OH")].get_idx()  # noqa
-                    if self.check_edge((carbon, oxygen)) and self.check_edge(
-                        (carbon, hydroxyl)
-                    ):
-                        self._symbol = "COOH"
-                        self._rep = carbon
-        # If there are six clusters in this functional group, the only FG we
-        # care about is phenyl, so we check for it.
-        elif len(self._vertices) == 6:
-            if ("C" in symbols) and (symbols.count("CH") == 5):
-                chs = []
-                for cluster in self.vertex_list():
-                    if cluster.get_symbol() == "CH":
-                        chs.append(cluster.get_idx())
-                carbon = self.vertex_list()[symbols.index("C")].get_idx()
-                chch_bonds = 0
-                chc_bonds = 0
-                for ch1 in chs:
-                    for ch2 in chs:
-                        if self.check_edge((ch1, ch2)):
-                            chch_bonds += 1
-                    if self.check_edge((ch1, carbon)):
-                        chc_bonds += 1
-                # CH-CH bonds got double counted, so we divide by two.
-                chch_bonds /= 2
-                if (chch_bonds == 4) and (chc_bonds == 2):
-                    self._symbol = "Ph"
-                    self._rep = carbon
-        # If there are seven clusters in this functional group, the only FG we
-        # care about is phenol, so we check for it.
-        elif len(self._vertices) == 7:
-            if (
-                ("OH" in symbols)
-                and (symbols.count("C") == 2)
-                and (symbols.count("CH") == 4)
-            ):
-                chs = []
-                for cluster in self.vertex_list():
-                    if cluster.get_symbol() == "CH":
-                        chs.append(cluster.get_idx())
-                carbons = []
-                for cluster in self.vertex_list():
-                    if cluster.get_symbol() == "C":
-                        carbons.append(cluster.get_idx())
-                hydroxyl = self.vertex_list()[symbols.index("OH")].get_idx()
-                chch_bonds = 0
-                chc_bonds = 0
-                for ch1 in chs:
-                    for ch2 in chs:
-                        if self.check_edge((ch1, ch2)):
-                            chch_bonds += 1
-                    for c in carbons:
-                        if self.check_edge((ch1, c)):
-                            chc_bonds += 1
-                coh_bonds = 0
-                for c in carbons:
-                    if self.check_edge((c, hydroxyl)):
-                        coh_bonds += 1
-                chch_bonds /= 2
-                if (chch_bonds == 2) and (chc_bonds == 4) and (coh_bonds == 1):
-                    self._symbol = "PhOH"
-                    for carbon in carbons:
-                        if self.check_edge((carbon, hydroxyl)):
-                            self._rep = carbon
+        if len(self._vertices) in call_this:
+            call_this[len(self._vertices)](symbols)
         else:
-            # If this functional group has more than one cluster and isn't any
-            # of our five functional groups, we assign it a standard name based
-            # on the clusters inside of it. For example, an alkyne would be
-            # (C)2 and a sulphonic acid would be (O)2(OH)(S).
-            out = ""
-            num_syms = {}
-            for sym in symbols:
-                if sym in num_syms.keys():
-                    num_syms[sym] = 1
-                else:
-                    num_syms[sym] += 1
-            for sym in num_syms.keys():
-                out += f"({sym}){num_syms[sym]}"
-            self._symbol = out
+            self._label_other(symbols)
         print(f"At the end of _update_symbol_determine_rep: {self._symbol=}")
+
+    def _label_single(self, symbols):
+        self._symbol = symbols[0]
+        self._rep = 0
+
+    def _find_carbonyl(self, symbols):
+        print("len(self._vertices) == 2")
+        if ("C" in symbols) and ("O" in symbols):
+            print('("C" in symbols) and ("O" in symbols)')
+            carbon = self.vertex_list()[symbols.index("C")].get_idx()
+            oxygen = self.vertex_list()[symbols.index("O")].get_idx()
+            if self.check_edge((carbon, oxygen)):
+                print("self.check_edge((carbon, oxygen))")
+                self._symbol = "C=O"
+                print(f"{self.get_symbol()=}")
+                self._rep = carbon
+
+    def _find_amide_or_cooh(self, symbols):
+        # Amide and COOH both have a carbon-only cluster and an oxygen-only
+        # cluster, as they both contain a carbonyl.
+        if ("C" in symbols) and ("O" in symbols):
+            carbon = self.vertex_list()[symbols.index("C")].get_idx()
+            oxygen = self.vertex_list()[symbols.index("O")].get_idx()
+            if "NH2" in symbols:
+                amine = self.vertex_list()[symbols.index("NH2")].get_idx()
+                if self.check_edge((carbon, oxygen)) and self.check_edge(
+                    (carbon, amine)
+                ):
+                    self._symbol = "Amd"
+                    self._rep = carbon
+            elif "OH" in symbols:
+                hydroxyl = self.vertex_list()[symbols.index("OH")].get_idx()  # noqa
+                if self.check_edge((carbon, oxygen)) and self.check_edge(
+                    (carbon, hydroxyl)
+                ):
+                    self._symbol = "COOH"
+                    self._rep = carbon
+
+    def _find_phenyl(self, symbols):
+        if ("C" in symbols) and (symbols.count("CH") == 5):
+            chs = []
+            for cluster in self.vertex_list():
+                if cluster.get_symbol() == "CH":
+                    chs.append(cluster.get_idx())
+            carbon = self.vertex_list()[symbols.index("C")].get_idx()
+            chch_bonds = 0
+            chc_bonds = 0
+            for ch1 in chs:
+                for ch2 in chs:
+                    if self.check_edge((ch1, ch2)):
+                        chch_bonds += 1
+                if self.check_edge((ch1, carbon)):
+                    chc_bonds += 1
+            # CH-CH bonds got double counted, so we divide by two.
+            chch_bonds /= 2
+            if (chch_bonds == 4) and (chc_bonds == 2):
+                self._symbol = "Ph"
+                self._rep = carbon
+
+    def _find_phenol(self, symbols):
+        if (
+            ("OH" in symbols)
+            and (symbols.count("C") == 2)
+            and (symbols.count("CH") == 4)
+        ):
+            chs = []
+            for cluster in self.vertex_list():
+                if cluster.get_symbol() == "CH":
+                    chs.append(cluster.get_idx())
+            carbons = []
+            for cluster in self.vertex_list():
+                if cluster.get_symbol() == "C":
+                    carbons.append(cluster.get_idx())
+            hydroxyl = self.vertex_list()[symbols.index("OH")].get_idx()
+            chch_bonds = 0
+            chc_bonds = 0
+            for ch1 in chs:
+                for ch2 in chs:
+                    if self.check_edge((ch1, ch2)):
+                        chch_bonds += 1
+                for c in carbons:
+                    if self.check_edge((ch1, c)):
+                        chc_bonds += 1
+            coh_bonds = 0
+            for c in carbons:
+                if self.check_edge((c, hydroxyl)):
+                    coh_bonds += 1
+            chch_bonds /= 2
+            if (chch_bonds == 2) and (chc_bonds == 4) and (coh_bonds == 1):
+                self._symbol = "PhOH"
+                for carbon in carbons:
+                    if self.check_edge((carbon, hydroxyl)):
+                        self._rep = carbon
+
+    def _label_other(self, symbols):
+        # If this functional group has more than one cluster and isn't any of
+        # our five functional groups, we assign it a standard name based on the
+        # clusters inside of it. For example, an alkyne would be (C)2 and a
+        # sulphonic acid would be (O)2(OH)(S).
+        out = ""
+        num_syms = {}
+        for sym in symbols:
+            if sym in num_syms.keys():
+                num_syms[sym] = 1
+            else:
+                num_syms[sym] += 1
+        for sym in num_syms.keys():
+            out += f"({sym}){num_syms[sym]}"
+        self._symbol = out
 
     def get_symbol(self) -> str:
         """Returns the symbol of this functional group."""
@@ -202,4 +215,10 @@ class FxnalGroup(IndexedGraph):
     def dist(self, other) -> float:
         self_rep = self.used_indices[self._rep]
         other_rep = self.used_indices[other.get_rep()]
+        print(f"{self=}, {self._rep=}, {other=}, {other.get_rep()=}")
+        print(
+            "In Group.dist: Finding distance from "
+            f"{self.used_indices[self_rep.get_rep()].coords} to "
+            f"{self.used_indices[other_rep.get_rep()].coords}"
+        )
         return self_rep.dist(other_rep)

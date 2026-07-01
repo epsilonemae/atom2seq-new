@@ -20,6 +20,28 @@ def carbonyl():
 
 
 @pytest.fixture
+def carbonyl_and_carboxylic_acid():
+    reset = FxnalGroup(set([]), set([]))
+    reset._reset_used_indices()
+    carbonyl = FxnalGroup(
+        {
+            Cluster({Atom("C", (0, 0, 0))}, set([])),
+            Cluster({Atom("O", (1, 0, 0))}, set([])),
+        },  # noqa
+        {(1, 3)},
+    )
+    carboxylic_acid = FxnalGroup(
+        {
+            Cluster({Atom("C", (0, 0, 1))}, set([])),
+            Cluster({Atom("O", (1, 0, 1))}, set([])),
+            Cluster({Atom("O", (0, 1, 1)), Atom("H", (0, 1, 1))}, {(9, 10)}),
+        },
+        {(6, 8), (6, 11)},
+    )
+    return carbonyl, carboxylic_acid
+
+
+@pytest.fixture
 def carboxylic_acid():
     reset = FxnalGroup(set([]), set([]))
     reset._reset_used_indices()
@@ -125,10 +147,11 @@ def test_merge_clusters(carbonyl):
     # indices, we check the repr to check it got merged properly.
     assert (
         repr(carbonyl)
-        == "Group({Cluster({Atom('O', (1, 0, 0), 5, 2), Atom('C', (0, 0, 0), "
-        "5, 0)}, {(0, 2)}, 4, 5)}, set(), -1, 4)"
+        == "Group([Cluster([Atom('C', (0, 0, 0), 5, 0), Atom('O', (1, 0, 0), "
+        "5, 2)], [(0, 2)], 4, 5)], [], -1, 4)"
     )
 
 
-def test_dist(carbonyl, carboxylic_acid):
+def test_dist(carbonyl_and_carboxylic_acid):
+    carbonyl, carboxylic_acid = carbonyl_and_carboxylic_acid
     assert carbonyl.dist(carboxylic_acid) == 1

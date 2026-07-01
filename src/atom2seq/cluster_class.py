@@ -6,7 +6,10 @@ class Cluster(IndexedGraph):
     surrounded by hydrogens."""
 
     def __repr__(self) -> str:
-        return f"Cluster({self._vertices}, {self._edges}, {self._parent}, {self._idx})"  # noqa
+        return (
+            f"Cluster({self.vertex_list()}, {sorted(list(self._edges))}, "
+            f"{self._parent}, {self._idx})"
+        )  # noqa
 
     def _tuple(self) -> tuple:
         """Returns a tuple representing this cluster. Used for checking
@@ -69,4 +72,9 @@ class Cluster(IndexedGraph):
         another cluster's representative atom."""
         self_rep = self.used_indices[self._rep]
         other_rep = self.used_indices[other.get_rep()]
+        print(f"{self=}, {self._rep=}, {other=}, {other.get_rep()=}")
+        print(
+            f"In Cluster.dist: Finding distance from {self_rep.coords} to "
+            f"{other_rep.coords}"
+        )
         return self_rep.dist(other_rep)
