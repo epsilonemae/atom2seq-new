@@ -28,3 +28,14 @@ def test_get_symbol(clusters):
 def test_dist(clusters):
     cluster1, cluster2 = clusters
     assert cluster1.dist(cluster2) == 2
+
+
+def test_get_rep(clusters):
+    cluster1, cluster2 = clusters
+    assert cluster1.get_rep() == -1
+
+
+def test_set_rep(clusters):
+    cluster1, cluster2 = clusters
+    cluster1.set_rep(0)
+    assert cluster1.get_rep() == 0

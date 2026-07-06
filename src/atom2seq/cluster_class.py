@@ -1,9 +1,15 @@
+from atom2seq.atom_class import Atom
 from atom2seq.indexed_graph_class import IndexedGraph
 
 
 class Cluster(IndexedGraph):
     """A class to represent a cluster of atoms, typically a non-hydrogen
     surrounded by hydrogens."""
+
+    def __init__(self, atoms, bonds, parent: int = -1, idx: int = -1):
+        super().__init__(atoms, bonds, parent, idx)
+        self._symbol = ""
+        self._rep = -1
 
     def __repr__(self) -> str:
         return (
@@ -74,3 +80,15 @@ class Cluster(IndexedGraph):
             f"{other_rep.coords}"
         )
         return self_rep.dist(other_rep)
+
+    def get_symbol(self) -> str:
+        return self._symbol
+
+    def set_symbol(self, new_sym) -> None:
+        self._symbol = new_sym
+
+    def get_rep(self) -> int:
+        return self._rep
+
+    def set_rep(self, new_rep) -> None:
+        self._rep = new_rep

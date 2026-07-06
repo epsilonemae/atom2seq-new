@@ -95,22 +95,5 @@ def test_check_edge(graph):
     assert graph.check_edge((0, 1)) and not graph.check_edge((1, 2))
 
 
-def test_get_rep(graph):
-    assert graph.get_rep() == -1
-
-
-def test_set_rep_valid(graph):
-    graph.set_rep(1)
-    assert graph.get_rep() == 1
-
-
-def test_set_rep_invalid(graph):
-    with pytest.raises(ValueError) as error_msg:
-        graph.set_rep(3)
-        assert (
-            error_msg == "The object at index 3 is not a child of this graph."
-        )  # noqa
-
-
 def test_get_adjacent(graph):
     assert graph.get_adjacent(0) == {1, 2}

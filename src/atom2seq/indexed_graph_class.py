@@ -15,8 +15,6 @@ class IndexedGraph(IndexedObject):
         super().__init__(parent, idx)
         self._vertices = vertices
         self._edges = edges
-        self._rep = -1
-        self._symbol = ""
         self._cleanup()
 
     def __repr__(self) -> str:
@@ -118,21 +116,6 @@ class IndexedGraph(IndexedObject):
         edge_to_check = (min(edge_to_check), max(edge_to_check))
         return edge_to_check in self._edges
 
-    def get_rep(self) -> int:
-        """Returns the index of this graph's representative vertex."""
-        return self._rep
-
-    def set_rep(self, idx: int) -> None:
-        """Sets this graph's representative vertex to the object at the given
-        index. Raises a ValueError if that object is not a child of this
-        graph."""
-        if idx in self.vertex_indices():
-            self._rep = idx
-        else:
-            raise ValueError(
-                f"The object at index {idx} is not a child of this graph."
-            )  # noqa
-
     def get_adjacent(self, idx: int) -> set:
         """Returns a set containing the indices of all vertices adjacent to the
         vertex at the given index."""
@@ -144,11 +127,3 @@ class IndexedGraph(IndexedObject):
                 elif edge[1] == idx:
                     out.add(edge[0])
         return out
-
-    def get_symbol(self) -> str:
-        """Returns this graph's symbol."""
-        return self._symbol
-
-    def set_symbol(self, new_sym) -> None:
-        """Sets this graph's symbol to the given symbol."""
-        self._symbol = new_sym
