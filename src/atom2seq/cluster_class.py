@@ -63,10 +63,6 @@ class Cluster(IndexedGraph):
             if atom.symbol != "H":
                 self._rep = atom.get_idx()
 
-    def get_symbol(self) -> str:
-        """Returns this cluster's symbol."""
-        return self._symbol
-
     def dist(self, other) -> float:
         """Returns the distance from this cluster's representative atom to
         another cluster's representative atom."""

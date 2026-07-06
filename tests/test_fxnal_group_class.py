@@ -116,8 +116,7 @@ def phenol():
 
 
 def test_get_symbol(carbonyl, carboxylic_acid, amide, phenyl, phenol):
-    print(f"{carbonyl.get_symbol()=}")
-    carbonyl._print_symbol()
+    print(type(carbonyl))
     assert (
         (carbonyl.get_symbol() == "C=O")
         and (carboxylic_acid.get_symbol() == "COOH")

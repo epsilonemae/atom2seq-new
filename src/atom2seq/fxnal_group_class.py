@@ -3,16 +3,6 @@ from atom2seq.indexed_graph_class import IndexedGraph
 
 
 class FxnalGroup(IndexedGraph):
-    def __init__(
-        self,
-        clusters: set[Cluster],
-        bonds: set[tuple[int]],
-        parent: int = -1,
-        idx: int = -1,
-    ):
-        super().__init__(clusters, bonds, parent, idx)
-        self._symbol = ""
-
     def __repr__(self) -> str:
         return (
             f"Group({self.vertex_list()}, {sorted(list(self._edges))}, "
@@ -22,9 +12,6 @@ class FxnalGroup(IndexedGraph):
     def _cleanup(self) -> None:
         super()._cleanup()
         self._update_symbol_determine_rep()
-
-    def _print_symbol(self) -> None:
-        print(f"in _print_symbol: {self._symbol=}")
 
     def _update_symbol_determine_rep(self) -> None:
         """Automatically assigns this functional group a symbol corresponding
@@ -46,27 +33,21 @@ class FxnalGroup(IndexedGraph):
             6: self._find_phenyl,
             7: self._find_phenol,
         }
-        print(f"{self=}, {symbols=}")
         if len(self._vertices) in call_this:
             call_this[len(self._vertices)](symbols)
         else:
             self._label_other(symbols)
-        print(f"At the end of _update_symbol_determine_rep: {self._symbol=}")
 
     def _label_single(self, symbols):
         self._symbol = symbols[0]
         self._rep = 0
 
     def _find_carbonyl(self, symbols):
-        print("len(self._vertices) == 2")
         if ("C" in symbols) and ("O" in symbols):
-            print('("C" in symbols) and ("O" in symbols)')
             carbon = self.vertex_list()[symbols.index("C")].get_idx()
             oxygen = self.vertex_list()[symbols.index("O")].get_idx()
             if self.check_edge((carbon, oxygen)):
-                print("self.check_edge((carbon, oxygen))")
-                self._symbol = "C=O"
-                print(f"{self.get_symbol()=}")
+                self.set_symbol("C=O")
                 self._rep = carbon
 
     def _find_amide_or_cooh(self, symbols):
@@ -105,13 +86,15 @@ class FxnalGroup(IndexedGraph):
                         chch_bonds += 1
                 if self.check_edge((ch1, carbon)):
                     chc_bonds += 1
-            # CH-CH bonds got double counted, so we divide by two.
+            # CH-CH bonds are being double counted
             chch_bonds /= 2
             if (chch_bonds == 4) and (chc_bonds == 2):
                 self._symbol = "Ph"
                 self._rep = carbon
 
     def _find_phenol(self, symbols):
+        print("finding phenol")
+        print("OH" in symbols, symbols.count("C"), symbols.count("CH"))
         if (
             ("OH" in symbols)
             and (symbols.count("C") == 2)
@@ -131,19 +114,26 @@ class FxnalGroup(IndexedGraph):
             for ch1 in chs:
                 for ch2 in chs:
                     if self.check_edge((ch1, ch2)):
+                        print(f"ch {ch1} and ch {ch2} are bonded")
                         chch_bonds += 1
                 for c in carbons:
+                    print(f"ch {ch1} and c {c}")
+                    print(self.check_edge((ch1, c)))
                     if self.check_edge((ch1, c)):
+                        print(f"ch {ch1} and c {c} are bonded")
                         chc_bonds += 1
+            # CH-CH bonds are being double-counted
+            chch_bonds /= 2
             coh_bonds = 0
             for c in carbons:
                 if self.check_edge((c, hydroxyl)):
+                    print(f"c {c} and oh {hydroxyl} are bonded")
                     coh_bonds += 1
-            chch_bonds /= 2
+            print(chch_bonds, chc_bonds, coh_bonds)
             if (chch_bonds == 2) and (chc_bonds == 4) and (coh_bonds == 1):
                 self._symbol = "PhOH"
                 for carbon in carbons:
-                    if self.check_edge((carbon, hydroxyl)):
+                    if not self.check_edge((carbon, hydroxyl)):
                         self._rep = carbon
 
     def _label_other(self, symbols):
@@ -161,10 +151,6 @@ class FxnalGroup(IndexedGraph):
         for sym in num_syms.keys():
             out += f"({sym}){num_syms[sym]}"
         self._symbol = out
-
-    def get_symbol(self) -> str:
-        """Returns the symbol of this functional group."""
-        return self._symbol
 
     def get_atoms(self) -> set:
         atoms = set([])

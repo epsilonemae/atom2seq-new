@@ -16,6 +16,7 @@ class IndexedGraph(IndexedObject):
         self._vertices = vertices
         self._edges = edges
         self._rep = -1
+        self._symbol = ""
         self._cleanup()
 
     def __repr__(self) -> str:
@@ -32,7 +33,6 @@ class IndexedGraph(IndexedObject):
         for vertex in self._vertices:
             vertex.set_parent(self._idx)
         new_edges = set([])
-        print(f"in super()._cleanup: {self._edges=}, {self=}")
         for edge in self._edges:
             if (edge[0] not in self.vertex_indices()) or (
                 edge[1] not in self.vertex_indices()
@@ -115,6 +115,7 @@ class IndexedGraph(IndexedObject):
 
     def check_edge(self, edge_to_check: tuple[int]) -> None:
         """Checks if a given edge is within this graph."""
+        edge_to_check = (min(edge_to_check), max(edge_to_check))
         return edge_to_check in self._edges
 
     def get_rep(self) -> int:
@@ -143,3 +144,11 @@ class IndexedGraph(IndexedObject):
                 elif edge[1] == idx:
                     out.add(edge[0])
         return out
+
+    def get_symbol(self) -> str:
+        """Returns this graph's symbol."""
+        return self._symbol
+
+    def set_symbol(self, new_sym) -> None:
+        """Sets this graph's symbol to the given symbol."""
+        self._symbol = new_sym
