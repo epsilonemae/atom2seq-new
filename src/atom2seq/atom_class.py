@@ -11,7 +11,7 @@ class Atom:
             self.idxs[idx] = self
 
     def __repr__(self):
-        return f"Atom('{self.symbol}', {self.coords})"
+        return f"Atom('{self.symbol}', {self.coords}, {self._idx})"
 
     def __eq__(self, other):
         # Returns True if and only if both the symbol and the coordinates are

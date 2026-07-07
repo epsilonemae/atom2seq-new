@@ -2,7 +2,7 @@ class ConnectivityTable:
     """A class to represent the edges of a graph. The vertices are not stored
     within this class."""
 
-    def __init__(self, pairs: list[tuple[int]]):
+    def __init__(self, pairs: set[tuple[int]]):
         self._pairs = pairs
 
     def __eq__(self, other):
@@ -14,9 +14,6 @@ class ConnectivityTable:
     def __len__(self):
         return len(self._pairs)
 
-    def __iter__(self):
-        return self._pairs
-
     def __hash__(self):
         return hash(tuple(self._pairs))
 
@@ -26,7 +23,7 @@ class ConnectivityTable:
 
     def add_pair(self, new_pair: tuple[int]):
         """Adds a given pair to this table."""
-        self._pairs.append(new_pair)
+        self._pairs.add(new_pair)
 
     def del_pair(self, pair_to_del: tuple[int]):
         """Deletes a given pair from this table."""
@@ -38,10 +35,10 @@ class ConnectivityTable:
 
     def get_paired(self, index):
         """Returns a list of all indices paired with a given index."""
-        out = []
+        out = set()
         for pair in self._pairs:
             if pair[0] == index:
-                out.append(pair[1])
+                out.add(pair[1])
             elif pair[1] == index:
-                out.append(pair[0])
+                out.add(pair[0])
         return out

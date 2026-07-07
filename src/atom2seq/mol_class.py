@@ -12,7 +12,7 @@ class Mol:
         self._atoms = atoms
         self._bonds = bonds
         for i in range(len(self._atoms)):
-            self._atoms[i].set_idx(i)
+            self.atom_list()[i].set_idx(i)
 
     def __repr__(self):
         return f"Mol({self._atoms}, {self._bonds})"
@@ -22,13 +22,18 @@ class Mol:
             self._bonds == other.get_bonds()
         )  # noqa
 
+    def atom_list(self):
+        return sorted(list(self._atoms))
+
     def dist(self, n: int, m: int) -> float:
         """Calculates the Euclidean distance between the given atoms."""
         n_coords, m_coords = ((), ())
         for atom in self._atoms:
             if atom.get_idx() == n:
+                print(atom, f" ({n=})")
                 n_coords = atom.coords
-            elif atom.get_idx == m:
+            if atom.get_idx() == m:
+                print(atom, f" ({m=})")
                 m_coords = atom.coords
         return math.sqrt(
             (n_coords[0] - m_coords[0]) ** 2
@@ -47,12 +52,12 @@ class Mol:
     def group_atoms(self, idxs_to_group: list[int]) -> Group:
         """Returns a group object that contains the given atoms and the bonds
         between them."""
-        atoms = set()
-        bonds = ConnectivityTable([])
+        new_atoms = set()
+        bonds = ConnectivityTable(set())
         for atom in self._atoms:
             if atom.get_idx() in idxs_to_group:
-                atoms.add(atom)
-        for bond in self._bonds:
+                new_atoms.add(atom)
+        for bond in self._bonds._pairs:
             if (bond[0] in idxs_to_group) and (bond[1] in idxs_to_group):
                 bonds.add_pair(bond)
-        return Group(atoms, bonds)
+        return Group(new_atoms, bonds)
