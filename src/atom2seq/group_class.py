@@ -14,12 +14,16 @@ class Group:
         self._bonds = bonds
         self._idx = -1
         for i in range(len(self._atoms)):
-            self._atoms[i].set_idx(i)
+            atom = sorted(list(self._atoms))[i]
+            if atom.get_idx() == -1:
+                atom.set_idx(i)
 
     def __repr__(self):
-        return f"Mol({self._atoms}, {self._bonds})"
+        return f"Group({self.atom_list()}, {self._bonds})"
 
     def __eq__(self, other):
+        print(f"{(self._atoms == other.get_atoms())=}")
+        print(f"{(self._bonds == other.get_bonds())=}")
         return (self._atoms == other.get_atoms()) and (
             self._bonds == other.get_bonds()
         )  # noqa
@@ -27,10 +31,17 @@ class Group:
     def __hash__(self):
         return hash((self._atoms, self._bonds))
 
+    def atom_list(self):
+        return sorted(list(self._atoms))
+
     def dist(self, n: int, m: int) -> float:
         """Calculates the Euclidean distance between the given atoms."""
-        n_coords = self._atoms[n].coords
-        m_coords = self._atoms[m].coords
+        n_coords, m_coords = ((), ())
+        for atom in self._atoms:
+            if atom.get_idx() == n:
+                n_coords = atom.coords
+            elif atom.get_idx() == m:
+                m_coords = atom.coords
         return math.sqrt(
             (n_coords[0] - m_coords[0]) ** 2
             + (n_coords[1] - m_coords[1]) ** 2

@@ -18,8 +18,17 @@ class Atom:
         # the same
         return (self.symbol == other.symbol) and (self.coords == other.coords)
 
+    def __lt__(self, other):
+        if self.coords[0] == other.coords[0]:
+            if self.coords[1] == other.coords[1]:
+                return self.coords[2] < other.coords[2]
+            else:
+                return self.coords[1] < other.coords[1]
+        else:
+            return self.coords[0] < other.coords[0]
+
     def __hash__(self):
-        return hash((self.symbol, self.coords, self._idx))
+        return hash((self.symbol, self.coords))
 
     def get_idx(self):
         """Returns the index of the atom."""
@@ -33,9 +42,10 @@ class Atom:
         if old_idx != -1:
             self.idxs.pop(old_idx)
         elif new_idx != -1:
-            if new_idx not in self.idxs:
-                self.idxs[new_idx] = self
-            else:
+            print(self.idxs)
+            if new_idx in self.idxs:
                 raise ValueError(
                     f"There is already an Atom at index {new_idx}."
                 )  # noqa
+            else:
+                self.idxs[new_idx] = self

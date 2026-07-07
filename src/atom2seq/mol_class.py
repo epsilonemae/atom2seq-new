@@ -24,8 +24,12 @@ class Mol:
 
     def dist(self, n: int, m: int) -> float:
         """Calculates the Euclidean distance between the given atoms."""
-        n_coords = self._atoms[n].coords
-        m_coords = self._atoms[m].coords
+        n_coords, m_coords = ((), ())
+        for atom in self._atoms:
+            if atom.get_idx() == n:
+                n_coords = atom.coords
+            elif atom.get_idx == m:
+                m_coords = atom.coords
         return math.sqrt(
             (n_coords[0] - m_coords[0]) ** 2
             + (n_coords[1] - m_coords[1]) ** 2
