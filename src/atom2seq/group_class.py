@@ -7,8 +7,6 @@ from atom2seq.connectivity_table_class import ConnectivityTable
 class Group:
     """A class representing a functional group. Supports checking equality."""
 
-    idxs = {}
-
     def __init__(self, atoms: set[Atom], bonds: ConnectivityTable):
         self._atoms = atoms
         self._bonds = bonds
@@ -21,6 +19,19 @@ class Group:
     def __repr__(self):
         return f"Group({self.atom_list()}, {self._bonds})"
 
+    def __lt__(self, other):
+        if len(self._atoms) == len(other.get_atoms()):
+            if len(self._bonds) == len(other.get_bonds()):
+                for i in range(len(self._atoms)):
+                    self_atom = self.atom_list()[i]
+                    other_atom = other.atom_list()[i]
+                    if self_atom.coords != other_atom.coords:
+                        return self_atom < other_atom
+            else:
+                return len(self._bonds) < len(other.get_bonds())
+        else:
+            return len(self._atoms) < len(other.get_atoms())
+
     def __eq__(self, other):
         print(f"{(self._atoms == other.get_atoms())=}")
         print(f"{(self._bonds == other.get_bonds())=}")
@@ -29,7 +40,7 @@ class Group:
         )  # noqa
 
     def __hash__(self):
-        return hash((self._atoms, self._bonds))
+        return hash((tuple(self.atom_list()), self._bonds))
 
     def atom_list(self):
         return sorted(list(self._atoms))
@@ -61,16 +72,5 @@ class Group:
         return self._idx
 
     def set_idx(self, new_idx):
-        """Sets the index of the group to the given index. Also updates the
-        internal dict of used indices."""
-        old_idx = self._idx
+        """Sets the index of the group to the given index."""
         self._idx = new_idx
-        if old_idx != -1:
-            self.idxs.pop(old_idx)
-        elif new_idx != -1:
-            if new_idx not in self.idxs:
-                self.idxs[new_idx] = self
-            else:
-                raise ValueError(
-                    f"There is already an Atom at index {new_idx}."
-                )  # noqa
