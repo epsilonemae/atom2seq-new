@@ -12,6 +12,13 @@ def empty_rgroup():
     )  # noqa
 
 
+def test_repr(empty_rgroup):
+    assert (
+        repr(empty_rgroup) == "RGroup([Group([], ConnectivityTable(set()))], "
+        "ConnectivityTable(set()))"
+    )
+
+
 def test_eq(empty_rgroup):
     assert empty_rgroup == RGroup(
         {Group(set(), ConnectivityTable(set()))}, ConnectivityTable(set())
@@ -24,3 +31,7 @@ def test_get_bonds(empty_rgroup):
 
 def test_get_groups(empty_rgroup):
     assert empty_rgroup.get_groups() == {Group(set(), ConnectivityTable(set()))}  # noqa
+
+
+def test_group_list(empty_rgroup):
+    assert empty_rgroup.group_list() == [Group(set(), ConnectivityTable(set()))]  # noqa

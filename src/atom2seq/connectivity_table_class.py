@@ -3,7 +3,9 @@ class ConnectivityTable:
     within this class."""
 
     def __init__(self, pairs: set[tuple[int]]):
-        self._pairs = pairs
+        self._pairs = set()
+        for pair in pairs:
+            self._pairs.add((min(pair), max(pair)))
 
     def __eq__(self, other):
         return self._pairs == other.get_pairs()
@@ -23,7 +25,7 @@ class ConnectivityTable:
 
     def add_pair(self, new_pair: tuple[int]):
         """Adds a given pair to this table."""
-        self._pairs.add(new_pair)
+        self._pairs.add((min(new_pair), max(new_pair)))
 
     def del_pair(self, pair_to_del: tuple[int]):
         """Deletes a given pair from this table."""
@@ -31,7 +33,7 @@ class ConnectivityTable:
 
     def check_pair(self, pair_to_check: tuple[int]):
         """Checks if a given pair is in this table."""
-        return pair_to_check in self._pairs
+        return (min(pair_to_check), max(pair_to_check)) in self._pairs
 
     def get_paired(self, index):
         """Returns a list of all indices paired with a given index."""

@@ -23,6 +23,7 @@ class Backbone:
         )  # noqa
 
     def group_list(self):
+        """Returns a list of"""
         return sorted(list(self._groups))
 
     def get_bonds(self) -> ConnectivityTable:

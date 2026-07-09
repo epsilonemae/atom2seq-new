@@ -11,8 +11,33 @@ def hydroxyl():
     atoms = set()
     atoms.add(Atom("O", (0, 0, 0)))
     atoms.add(Atom("H", (0, 0, 1)))
-    bonds = ConnectivityTable([(0, 1)])
+    bonds = ConnectivityTable({(0, 1)})
     return Group(atoms, bonds)
+
+
+def test_repr(hydroxyl):
+    assert (
+        repr(hydroxyl) == "Group([Atom('O', (0, 0, 0), 0), Atom('H', "
+        "(0, 0, 1), 1)], ConnectivityTable({(0, 1)}))"
+    )
+
+
+def test_lt_len_atoms(hydroxyl):
+    assert hydroxyl > Group(set(), ConnectivityTable(set()))
+
+
+def test_lt_len_bonds(hydroxyl):
+    assert hydroxyl > Group(
+        {Atom("O", (0, 0, 0), 0), Atom("H", (0, 0, 1), 1)},
+        ConnectivityTable(set()),  # noqa
+    )
+
+
+def test_lt_by_atom(hydroxyl):
+    assert hydroxyl > Group(
+        {Atom("O", (0, 0, -1), 0), Atom("H", (0, 0, 1), 1)},
+        ConnectivityTable({(0, 1)}),  # noqa
+    )
 
 
 def test_eq(hydroxyl):
