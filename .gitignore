@@ -13,3 +13,7 @@ env/
 
 # Ignoring the egg-info directory
 *.egg-info
+
+# .coverage file
+
+.coverage
