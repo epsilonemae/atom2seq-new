@@ -15,7 +15,7 @@ class Mol:
             self.atom_list()[i].set_idx(i)
 
     def __repr__(self):
-        return f"Mol({self._atoms}, {self._bonds})"
+        return f"Mol({self.atom_list()}, {self._bonds})"
 
     def __eq__(self, other):
         return (self._atoms == other.get_atoms()) and (
@@ -25,15 +25,16 @@ class Mol:
     def atom_list(self):
         return sorted(list(self._atoms))
 
+    def idx_list(self):
+        return [atom.get_idx() for atom in self.atom_list()]
+
     def dist(self, n: int, m: int) -> float:
         """Calculates the Euclidean distance between the given atoms."""
         n_coords, m_coords = ((), ())
         for atom in self._atoms:
             if atom.get_idx() == n:
-                print(atom, f" ({n=})")
                 n_coords = atom.coords
             if atom.get_idx() == m:
-                print(atom, f" ({m=})")
                 m_coords = atom.coords
         return math.sqrt(
             (n_coords[0] - m_coords[0]) ** 2

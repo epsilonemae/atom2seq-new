@@ -1,5 +1,6 @@
 class Atom:
-    """A class representing an atom."""
+    """A class representing an atom. Supports comparison, checking equality,
+    and hashing."""
 
     def __init__(self, symbol: str, coords: tuple[float], idx: int = -1):
         self.symbol = symbol

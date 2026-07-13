@@ -79,7 +79,7 @@ class RGroup:
             self.group_list()[i].set_idx(i)
 
     def __repr__(self):
-        return f"RGroup({self._groups}, {self._bonds})"
+        return f"RGroup({self.group_list()}, {self._bonds})"
 
     def __eq__(self, other):
         return (self._groups == other.get_groups()) and (
@@ -98,17 +98,13 @@ class RGroup:
         return self._groups
 
     def symbol(self):
-        print(self)
         key = []
         for group in self._groups:
-            print(group)
             add_to_key = []
             for atom in group.get_atoms():
                 print(atom)
                 add_to_key.append(atom.symbol)
-                print(add_to_key)
             key.append(tuple(sorted(add_to_key)))
-            print(key)
         symbol = self.symbol_dict[tuple(sorted(key))]
         if symbol == "I/L":
             for group in self._groups:

@@ -1,3 +1,5 @@
+import pytest
+
 from atom2seq.atom_class import Atom
 from atom2seq.connectivity_table_class import ConnectivityTable
 from atom2seq.group_class import Group
@@ -240,3 +242,23 @@ def test_Y():
         ConnectivityTable({(0, 1)}),
     )
     assert tyr.symbol() == "Y"
+
+
+def test_IL_invalid():
+    with pytest.raises(KeyError) as msg:
+        invalid_IL = RGroup(
+            group_set(
+                [
+                    ["C", "H"],
+                    ["C", "H", "H"],
+                    ["C", "H", "H", "H"],
+                    ["C", "H", "H", "H"],
+                ]
+            ),
+            ConnectivityTable({(0, 1), (2, 3), (1, 3)}),
+        )
+        assert not invalid_IL.symbol()
+    assert (
+        msg.exconly(True) == "KeyError: 'This R-group is I/L, but is neither "
+        "I nor L.'"
+    )
