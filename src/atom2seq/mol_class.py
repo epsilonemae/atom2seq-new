@@ -28,14 +28,15 @@ class Mol:
     def idx_list(self):
         return [atom.get_idx() for atom in self.atom_list()]
 
+    def get_atom(self, idx):
+        """Returns the atom at the specified index."""
+        return self.atom_list()[self.idx_list().index(idx)]
+
     def dist(self, n: int, m: int) -> float:
         """Calculates the Euclidean distance between the given atoms."""
         n_coords, m_coords = ((), ())
-        for atom in self._atoms:
-            if atom.get_idx() == n:
-                n_coords = atom.coords
-            if atom.get_idx() == m:
-                m_coords = atom.coords
+        n_coords = self.get_atom(n).coords
+        m_coords = self.get_atom(m).coords
         return math.sqrt(
             (n_coords[0] - m_coords[0]) ** 2
             + (n_coords[1] - m_coords[1]) ** 2
