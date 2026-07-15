@@ -11,7 +11,7 @@ class ConnectivityTable:
         return self._pairs == other.get_pairs()
 
     def __repr__(self):
-        return f"ConnectivityTable({self._pairs})"
+        return f"ConnectivityTable({sorted(list(self._pairs))})"
 
     def __len__(self):
         return len(self._pairs)

@@ -102,7 +102,6 @@ class RGroup:
         for group in self._groups:
             add_to_key = []
             for atom in group.get_atoms():
-                print(atom)
                 add_to_key.append(atom.symbol)
             key.append(tuple(sorted(add_to_key)))
         symbol = self.symbol_dict[tuple(sorted(key))]

@@ -1,5 +1,3 @@
-from atom2seq.atom_class import Atom
-from atom2seq.group_class import Group
 from atom2seq.mol_class import Mol
 
 
@@ -7,102 +5,120 @@ class GroupedMol(Mol):
     def __init__(self, molecule):
         super().__init__(molecule.get_atoms(), molecule.get_bonds())
         self.groups = set()
-        self.grouped = []
+        self.grouped = set()
 
     def auto_group(self):
         for atom in self.atom_list():
             if atom.get_idx() not in self.grouped:
-                self.detectInd(atom.get_idx())
-                self.detectImd(atom.get_idx())
-                self.detectPhOH(atom.get_idx())
-                self.detectPh(atom.get_idx())
                 self.detectAmd(atom.get_idx())
                 self.detectCOOH(atom.get_idx())
                 self.detectCO(atom.get_idx())
                 self.detectXHn(atom.get_idx())
 
-    def detectInd(self, idx: int):
-        pass
+    def detectAmd(self, idx: int, is_initial: bool = False):
+        if is_initial:
+            to_group = [idx]
+            carbon = list(self._bonds.get_paired(idx))  # bonded to one thing
+            to_group.append(carbon)
+            for i in self._bonds.get_paired(carbon):
+                if self.get_atom(i).symbol == "N":
+                    to_group.append(i)
+                    for j in self._bonds.get_paired(i):
+                        if self.get_atom(j).symbol == "H":
+                            to_group.append(j)
+            if (len(to_group) == 4) or (len(to_group) == 5):
+                for i in to_group:
+                    self.grouped.add(i)
+                self.groups.add(self.group_atoms(to_group))
+        else:
+            atom = self.get_atom(idx)
+            if atom.symbol == "H":
+                bonded = list(self._bonds.get_paired(idx))[0]
+                self.detectCOOH(bonded)
+            if atom.symbol == "O":
+                if len(self._bonds.get_paired(idx)) == 1:
+                    self.detectAmd(idx, True)
+            elif atom.symbol == "C":
+                for i in self._bonds.get_paired(idx):
+                    if self.get_atom(i).symbol == "O":
+                        self.detectAmd(i)
+            elif atom.symbol == "N":
+                for i in self._bonds.get_paired(idx):
+                    if self.get_atom(i).symbol == "C":
+                        if len(self._bonds.get_paired(i)) == 3:
+                            self.detectAmd(i)
 
-    def detectImd(self, idx: int):
-        pass
-
-    def detectPhOH(self, idx: int):
-        pass
-
-    def detectPh(self, idx: int):
-        pass
-
-    def detectAmd(self, idx: int):
-        pass
-
-    def detectCOOH(self, idx: int):
-        pass
+    def detectCOOH(self, idx: int, is_initial: bool = False):
+        if is_initial:
+            to_group = [idx]
+            carbon = list(self._bonds.get_paired(idx))[0]  # only bonded to one
+            to_group.append(carbon)
+            for i in self._bonds.get_paired(carbon):
+                if self.get_atom(i).symbol == "O":
+                    if i not in to_group:
+                        to_group.append(i)
+                    for j in self._bonds.get_paired(i):
+                        if self.get_atom(j).symbol == "H":
+                            to_group.append(j)
+            if len(to_group) == 4:
+                for i in to_group:
+                    self.grouped.add(i)
+                self.groups.add(self.group_atoms(to_group))
+        else:
+            atom = self.get_atom(idx)
+            if atom.symbol == "H":
+                bonded = list(self._bonds.get_paired(idx))[0]
+                self.detectCOOH(bonded)
+            if atom.symbol == "O":
+                if len(self._bonds.get_paired(idx)) == 1:
+                    self.detectCOOH(idx, True)
+                elif len(self._bonds.get_paired(idx)) == 2:
+                    for i in self._bonds.get_paired(idx):
+                        if self.get_atom(i).symbol == "C":
+                            self.detectCOOH(i)
+            elif atom.symbol == "C":
+                for i in self._bonds.get_paired(idx):
+                    if self.get_atom(i).symbol == "O":
+                        if len(self._bonds.get_paired(i)) == 1:
+                            self.detectCOOH(i, True)
 
     def detectCO(self, idx: int):
-        pass
+        atom = self.get_atom(idx)
+        if atom.symbol == "O":
+            if len(self._bonds.get_paired(idx)) == 1:
+                i = list(self._bonds.get_paired(idx))[0]
+                if self.get_atom(i).symbol == "C":
+                    to_group = [idx, i]
+                    for i in to_group:
+                        self.grouped.add(i)
+                    self.groups.add(self.group_atoms(to_group))
+        elif atom.symbol == "C":
+            for i in self._bonds.get_paired(idx):
+                new_atom = self.get_atom(i)
+                if new_atom.symbol == "O":
+                    self.detectCO(i)
 
     def detectXHn(self, idx: int):
-        if self.get_atom(idx).symbol == "H":
-            center = self.get_bonds().get_paired(idx)[0]
-            self.detectXHn(center)
+        atom = self.get_atom(idx)
+        if atom.symbol == "H":
+            center = list(self._bonds.get_paired(idx))[0]
+            if center in self.grouped:
+                self.groups.add(self.group_atoms([idx]))
+            else:
+                self.detectXHn(center)
         else:
-            to_group = self.get_bonds().get_paired(idx).append(idx)
+            paired = list(self._bonds.get_paired(idx))
+            to_group = []
+            for i in paired:
+                if self.get_atom(i).symbol == "H":
+                    to_group.append(i)
+            to_group.append(idx)
             for i in to_group:
-                self.grouped.append(i)
-            self.out.add(self.group_atoms(to_group))
+                self.grouped.add(i)
+            self.groups.add(self.group_atoms(to_group))
 
 
-def group_mol(molecule: Mol) -> set[Group]:
-    out = set()
-    grouped = []
-    for atom in molecule.atom_list():
-        if atom.get_idx() not in grouped:
-            detectInd(molecule, atom.get_idx(), out)
-            detectImd(molecule, atom.get_idx(), out)
-            detectPhOH(molecule, atom.get_idx(), out)
-            detectPh(molecule, atom.get_idx(), out)
-            detectAmd(molecule, atom.get_idx(), out)
-            detectCOOH(molecule, atom.get_idx(), out)
-            detectCO(molecule, atom.get_idx(), out)
-            detectXHn(molecule, atom.get_idx(), out)
-
-
-def detectInd(molecule: Mol, idx: int, out: set, grouped: list):
-    pass
-
-
-def detectImd(molecule: Mol, idx: int, out: set, grouped: list):
-    pass
-
-
-def detectPhOH(molecule: Mol, idx: int, out: set, grouped: list):
-    pass
-
-
-def detectPh(molecule: Mol, idx: int, out: set, grouped: list):
-    pass
-
-
-def detectAmd(molecule: Mol, idx: int, out: set, grouped: list):
-    pass
-
-
-def detectCOOH(molecule: Mol, idx: int, out: set, grouped: list):
-    pass
-
-
-def detectCO(molecule: Mol, idx: int, out: set, grouped: list):
-    if molecule.get_atom(idx).symbol == "C":
-        for i in molecule.get_bonds().get_paired(idx):
-            if molecule.get_atom(i).symbol == "O":
-                detectCO(molecule, i, out)
-
-
-def detectXHn(molecule: Mol, idx: int, out: set, grouped: list):
-    if molecule.get_atom(idx).symbol == "H":
-        center = molecule.get_bonds().get_paired(idx)[0]
-        detectXHn(molecule, center, out)
-    else:
-        to_group = molecule.get_bonds().get_paired(idx).append(idx)
-        out.add(molecule.group_atoms(to_group))
+def group_mol(molecule):
+    gmol = GroupedMol(molecule)
+    gmol.auto_group()
+    return gmol.groups

@@ -33,8 +33,18 @@ class Group:
             return len(self._atoms) < len(other.get_atoms())
 
     def __eq__(self, other):
-        print(f"{(self._atoms == other.get_atoms())=}")
-        print(f"{(self._bonds == other.get_bonds())=}")
+        print(
+            f"{self._atoms=}, {other.get_atoms()=}, are they equal? "
+            f"{(self._atoms == other.get_atoms())}"
+        )
+        print(
+            f"{self._bonds=}, {other.get_bonds()=}, are they equal? "
+            f"{(self._bonds == other.get_bonds())}"
+        )
+        print(
+            (self._atoms == other.get_atoms())
+            and (self._bonds == other.get_bonds())  # noqa
+        )  # noqa
         return (self._atoms == other.get_atoms()) and (
             self._bonds == other.get_bonds()
         )  # noqa

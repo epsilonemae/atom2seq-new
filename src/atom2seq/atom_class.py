@@ -13,6 +13,15 @@ class Atom:
     def __eq__(self, other):
         # Returns True if and only if both the symbol and the coordinates are
         # the same
+        print(
+            f"{self.symbol=}, {other.symbol=}, are they equal? "
+            f"{self.symbol == other.symbol}"
+        )
+        print(
+            f"{self.coords=}, {other.coords=}, are they equal? "
+            f"{self.coords == other.coords}"
+        )
+        print((self.symbol == other.symbol) and (self.coords == other.coords))
         return (self.symbol == other.symbol) and (self.coords == other.coords)
 
     def __lt__(self, other):
