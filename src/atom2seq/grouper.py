@@ -9,16 +9,22 @@ class GroupedMol(Mol):
 
     def auto_group(self):
         for atom in self.atom_list():
+            # Need to check individually each time so that only one ever gets
+            # run on an atom. Note self.grouped is getting updated by the
+            # detect functions.
             if atom.get_idx() not in self.grouped:
                 self.detectAmd(atom.get_idx())
+            if atom.get_idx() not in self.grouped:
                 self.detectCOOH(atom.get_idx())
+            if atom.get_idx() not in self.grouped:
                 self.detectCO(atom.get_idx())
+            if atom.get_idx() not in self.grouped:
                 self.detectXHn(atom.get_idx())
 
     def detectAmd(self, idx: int, is_initial: bool = False):
         if is_initial:
             to_group = [idx]
-            carbon = list(self._bonds.get_paired(idx))  # bonded to one thing
+            carbon = list(self._bonds.get_paired(idx))[0]  # only one thing
             to_group.append(carbon)
             for i in self._bonds.get_paired(carbon):
                 if self.get_atom(i).symbol == "N":
@@ -34,7 +40,7 @@ class GroupedMol(Mol):
             atom = self.get_atom(idx)
             if atom.symbol == "H":
                 bonded = list(self._bonds.get_paired(idx))[0]
-                self.detectCOOH(bonded)
+                self.detectAmd(bonded)
             if atom.symbol == "O":
                 if len(self._bonds.get_paired(idx)) == 1:
                     self.detectAmd(idx, True)

@@ -17,10 +17,10 @@ class ConnectivityTable:
         return len(self._pairs)
 
     def __hash__(self):
-        return hash(tuple(self._pairs))
+        return hash(tuple(sorted(list(self._pairs))))
 
     def get_pairs(self):
-        """Returns the list of pairs within this table."""
+        """Returns the set of pairs within this table."""
         return self._pairs
 
     def add_pair(self, new_pair: tuple[int]):
