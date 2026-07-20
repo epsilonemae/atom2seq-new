@@ -14,8 +14,8 @@ def empty_bb():
 
 def test_repr(empty_bb):
     assert (
-        repr(empty_bb) == "Backbone({Group([], ConnectivityTable(set()))}, "
-        "ConnectivityTable(set()))"
+        repr(empty_bb) == "Backbone({Group([], ConnectivityTable([]))}, "
+        "ConnectivityTable([]))"
     )
 
 

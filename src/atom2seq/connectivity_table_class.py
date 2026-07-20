@@ -11,16 +11,16 @@ class ConnectivityTable:
         return self._pairs == other.get_pairs()
 
     def __repr__(self):
-        return f"ConnectivityTable({self._pairs})"
+        return f"ConnectivityTable({sorted(list(self._pairs))})"
 
     def __len__(self):
         return len(self._pairs)
 
     def __hash__(self):
-        return hash(tuple(self._pairs))
+        return hash(tuple(sorted(list(self._pairs))))
 
     def get_pairs(self):
-        """Returns the list of pairs within this table."""
+        """Returns the set of pairs within this table."""
         return self._pairs
 
     def add_pair(self, new_pair: tuple[int]):

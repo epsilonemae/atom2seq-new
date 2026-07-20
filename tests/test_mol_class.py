@@ -18,7 +18,7 @@ def water():
 def test_repr(water):
     assert (
         repr(water) == "Mol([Atom('O', (0, 0, 0), 0), Atom('H', (0, 1, 0), "
-        "1), Atom('H', (1, 0, 0), 2)], ConnectivityTable({(0, 1), (0, 2)}))"
+        "1), Atom('H', (1, 0, 0), 2)], ConnectivityTable([(0, 1), (0, 2)]))"
     )
 
 

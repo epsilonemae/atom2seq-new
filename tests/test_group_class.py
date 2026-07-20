@@ -18,7 +18,7 @@ def hydroxyl():
 def test_repr(hydroxyl):
     assert (
         repr(hydroxyl) == "Group([Atom('O', (0, 0, 0), 0), Atom('H', "
-        "(0, 0, 1), 1)], ConnectivityTable({(0, 1)}))"
+        "(0, 0, 1), 1)], ConnectivityTable([(0, 1)]))"
     )
 
 
@@ -42,7 +42,7 @@ def test_lt_by_atom(hydroxyl):
 
 def test_eq(hydroxyl):
     assert hydroxyl == Group(
-        {Atom("O", (0, 0, 0), 2), Atom("H", (0, 0, 1), 3)},
+        {Atom("O", (0, 0, 0), 1000), Atom("H", (0, 0, 1), 10001)},
         ConnectivityTable([(0, 1)]),  # noqa
     )
 

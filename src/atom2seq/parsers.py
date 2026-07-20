@@ -54,20 +54,12 @@ def bond_mol(molecule: Mol) -> None:
     for bond in bonds_by_idx:
         idx = bond[0]
         to_bond = bond[1]
-        sym1 = False
-        for atom in molecule.atom_list():
-            if atom.get_idx() == idx:
-                sym1 = atom.symbol
+        sym1 = molecule.get_atom(idx).symbol
         for idx_to_bond in to_bond:
             if idx_to_bond in molecule.idx_list():
                 if idx != idx_to_bond:
-                    sym2 = False
-                    for atom in molecule.atom_list():
-                        if atom.get_idx() == idx_to_bond:
-                            sym2 = atom.symbol
-                    print(sym1, sym2)
+                    sym2 = molecule.get_atom(idx_to_bond).symbol
                     max_dist = 1.1 * (radii[sym1] + radii[sym2])
-                    print(f"{molecule.dist(idx, idx_to_bond)=}, {max_dist=}")
                     if 0.5 <= molecule.dist(idx, idx_to_bond) <= max_dist:
                         molecule.get_bonds().add_pair((idx, idx_to_bond))
 
