@@ -29,7 +29,7 @@ def group_set(syms_lol):
 
 def test_A():
     ala = RGroup(
-        group_set([["C", "H", "H", "H"]]),
+        group_set((("C", "H", "H", "H"),)),
         ConnectivityTable(set()),
     )
     assert ala.symbol() == "A"
@@ -37,14 +37,14 @@ def test_A():
 
 def test_C():
     cys = RGroup(
-        group_set([["C", "H", "H"], ["H", "S"]]), ConnectivityTable({(0, 1)})
+        group_set((("C", "H", "H"), ("H", "S"))), ConnectivityTable({(0, 1)})
     )  # noqa
     assert cys.symbol() == "C"
 
 
 def test_D():
     asp = RGroup(
-        group_set([["C", "H", "H"], ["C", "H", "O", "O"]]),
+        group_set((("C", "H", "H"), ("C", "H", "O", "O"))),
         ConnectivityTable({(0, 1)}),  # noqa
     )
     assert asp.symbol() == "D"
@@ -52,7 +52,7 @@ def test_D():
 
 def test_E():
     glu = RGroup(
-        group_set([["C", "H", "H"], ["C", "H", "H"], ["C", "H", "O", "O"]]),
+        group_set((("C", "H", "H"), ("C", "H", "H"), ("C", "H", "O", "O"))),
         ConnectivityTable({(0, 1), (1, 2)}),
     )
     assert glu.symbol() == "E"
@@ -61,10 +61,15 @@ def test_E():
 def test_F():
     phe = RGroup(
         group_set(
-            [
-                ["C", "C", "C", "C", "C", "C", "H", "H", "H", "H", "H"],
-                ["C", "H", "H"],
-            ]
+            (
+                ("C",),
+                ("C", "H"),
+                ("C", "H"),
+                ("C", "H"),
+                ("C", "H"),
+                ("C", "H"),
+                ("C", "H", "H"),
+            )
         ),
         ConnectivityTable({(0, 1)}),
     )
@@ -73,7 +78,16 @@ def test_F():
 
 def test_H():
     his = RGroup(
-        group_set([["C", "C", "C", "H", "H", "H", "H", "N", "N"]]),
+        group_set(
+            (
+                ("C",),
+                ("C", "H"),
+                ("C", "H"),
+                ("C", "H", "H"),
+                ("H", "N"),
+                ("N",),
+            )
+        ),
         ConnectivityTable(set()),
     )
     assert his.symbol() == "H"
@@ -82,12 +96,12 @@ def test_H():
 def test_I():
     ile = RGroup(
         group_set(
-            [
-                ["C", "H"],
-                ["C", "H", "H"],
-                ["C", "H", "H", "H"],
-                ["C", "H", "H", "H"],
-            ]
+            (
+                ("C", "H"),
+                ("C", "H", "H"),
+                ("C", "H", "H", "H"),
+                ("C", "H", "H", "H"),
+            )
         ),
         ConnectivityTable({(0, 1), (0, 2), (2, 3)}),
     )
@@ -97,13 +111,13 @@ def test_I():
 def test_K():
     lys = RGroup(
         group_set(
-            [
-                ["C", "H", "H"],
-                ["C", "H", "H"],
-                ["C", "H", "H"],
-                ["C", "H", "H"],
-                ["H", "H", "N"],
-            ]
+            (
+                ("C", "H", "H"),
+                ("C", "H", "H"),
+                ("C", "H", "H"),
+                ("C", "H", "H"),
+                ("H", "H", "N"),
+            )
         ),
         ConnectivityTable({(0, 1), (1, 2), (2, 3), (3, 4)}),
     )
@@ -113,12 +127,12 @@ def test_K():
 def test_L():
     leu = RGroup(
         group_set(
-            [
-                ["C", "H"],
-                ["C", "H", "H"],
-                ["C", "H", "H", "H"],
-                ["C", "H", "H", "H"],
-            ]
+            (
+                ("C", "H"),
+                ("C", "H", "H"),
+                ("C", "H", "H", "H"),
+                ("C", "H", "H", "H"),
+            )
         ),
         ConnectivityTable({(0, 1), (0, 2), (0, 3)}),
     )
@@ -128,7 +142,7 @@ def test_L():
 def test_M():
     met = RGroup(
         group_set(
-            [["C", "H", "H"], ["C", "H", "H"], ["C", "H", "H", "H"], ["S"]]
+            (("C", "H", "H"), ("C", "H", "H"), ("C", "H", "H", "H"), ("S",))
         ),  # noqa
         ConnectivityTable({(0, 1), (1, 3), (2, 3)}),
     )
@@ -137,7 +151,7 @@ def test_M():
 
 def test_N():
     asn = RGroup(
-        group_set([["C", "H", "H"], ["C", "H", "H", "N", "O"]]),
+        group_set((("C", "H", "H"), ("C", "H", "N", "O"), ("H",))),
         ConnectivityTable({(0, 1)}),
     )
     assert asn.symbol() == "N"
@@ -145,7 +159,7 @@ def test_N():
 
 def test_P():
     pro = RGroup(
-        group_set([["C", "H", "H"], ["C", "H", "H"], ["C", "H", "H"]]),
+        group_set((("C", "H", "H"), ("C", "H", "H"), ("C", "H", "H"))),
         ConnectivityTable({(0, 1), (1, 2)}),
     )
     assert pro.symbol() == "P"
@@ -154,7 +168,7 @@ def test_P():
 def test_Q():
     gln = RGroup(
         group_set(
-            [["C", "H", "H"], ["C", "H", "H"], ["C", "H", "H", "N", "O"]]
+            (("C", "H", "H"), ("C", "H", "H"), ("C", "H", "N", "O"), ("H",))
         ),  # noqa
         ConnectivityTable({(0, 1), (1, 2)}),
     )
@@ -164,15 +178,15 @@ def test_Q():
 def test_R():
     arg = RGroup(
         group_set(
-            [
-                ["C"],
-                ["C", "H", "H"],
-                ["C", "H", "H"],
-                ["C", "H", "H"],
-                ["H", "H", "N"],
-                ["H", "N"],
-                ["H", "N"],
-            ]
+            (
+                ("C",),
+                ("C", "H", "H"),
+                ("C", "H", "H"),
+                ("C", "H", "H"),
+                ("H", "H", "N"),
+                ("H", "N"),
+                ("H", "N"),
+            )
         ),
         ConnectivityTable({(1, 2), (2, 3), (3, 5), (0, 5), (0, 4), (0, 6)}),
     )
@@ -181,14 +195,14 @@ def test_R():
 
 def test_S():
     ser = RGroup(
-        group_set([["C", "H", "H"], ["H", "O"]]), ConnectivityTable({(0, 1)})
+        group_set((("C", "H", "H"), ("H", "O"))), ConnectivityTable({(0, 1)})
     )  # noqa
     assert ser.symbol() == "S"
 
 
 def test_T():
     thr = RGroup(
-        group_set([["C", "H"], ["C", "H", "H", "H"], ["H", "O"]]),
+        group_set((("C", "H"), ("C", "H", "H", "H"), ("H", "O"))),
         ConnectivityTable({(0, 1), (1, 2)}),
     )
     assert thr.symbol() == "T"
@@ -196,7 +210,7 @@ def test_T():
 
 def test_V():
     val = RGroup(
-        group_set([["C", "H"], ["C", "H", "H", "H"], ["C", "H", "H", "H"]]),
+        group_set((("C", "H"), ("C", "H", "H", "H"), ("C", "H", "H", "H"))),
         ConnectivityTable({(0, 1), (1, 2)}),
     )
     assert val.symbol() == "V"
@@ -205,26 +219,18 @@ def test_V():
 def test_W():
     trp = RGroup(
         group_set(
-            [
-                [
-                    "C",
-                    "C",
-                    "C",
-                    "C",
-                    "C",
-                    "C",
-                    "C",
-                    "C",
-                    "H",
-                    "H",
-                    "H",
-                    "H",
-                    "H",
-                    "H",
-                    "N",
-                ],
-                ["C", "H", "H"],
-            ]
+            (
+                ("C",),
+                ("C",),
+                ("C",),
+                ("C", "H"),
+                ("C", "H"),
+                ("C", "H"),
+                ("C", "H"),
+                ("C", "H"),
+                ("C", "H", "H"),
+                ("H", "N"),
+            )
         ),
         ConnectivityTable({(0, 1)}),
     )
@@ -234,10 +240,16 @@ def test_W():
 def test_Y():
     tyr = RGroup(
         group_set(
-            [
-                ["C", "C", "C", "C", "C", "C", "H", "H", "H", "H", "H", "O"],
-                ["C", "H", "H"],
-            ]
+            (
+                ("C",),
+                ("C",),
+                ("C", "H"),
+                ("C", "H"),
+                ("C", "H"),
+                ("C", "H"),
+                ("C", "H", "H"),
+                ("O", "H"),
+            )
         ),
         ConnectivityTable({(0, 1)}),
     )
@@ -248,12 +260,12 @@ def test_IL_invalid():
     with pytest.raises(KeyError) as msg:
         invalid_IL = RGroup(
             group_set(
-                [
-                    ["C", "H"],
-                    ["C", "H", "H"],
-                    ["C", "H", "H", "H"],
-                    ["C", "H", "H", "H"],
-                ]
+                (
+                    ("C", "H"),
+                    ("C", "H", "H"),
+                    ("C", "H", "H", "H"),
+                    ("C", "H", "H", "H"),
+                )
             ),
             ConnectivityTable({(0, 1), (2, 3), (1, 3)}),
         )
