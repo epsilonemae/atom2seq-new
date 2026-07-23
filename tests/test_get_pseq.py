@@ -1,9 +1,8 @@
 import pytest
 
 from atom2seq.atom_class import Atom
-from atom2seq.backbone_class import Backbone
-from atom2seq.backbone_ider import Grouped, get_pseq
 from atom2seq.connectivity_table_class import ConnectivityTable
+from atom2seq.get_pseq import Grouped, get_pseq
 from atom2seq.group_class import Group
 
 
@@ -130,11 +129,6 @@ def no_nterm_bonds():
 
 
 @pytest.fixture
-def no_nterm(no_nterm_groups, no_nterm_bonds):
-    return Grouped(no_nterm_groups, no_nterm_bonds)
-
-
-@pytest.fixture
 def invalid_groups():
     return {
         Group(
@@ -162,11 +156,6 @@ def invalid_bonds():
     return ConnectivityTable({(0, 1), (1, 2)})
 
 
-@pytest.fixture
-def invalid(invalid_groups, invalid_bonds):
-    return Grouped(invalid_groups, invalid_bonds)
-
-
 def test_group_symbols(gap):
     assert gap.group_symbols(4) == ["H", "H", "N"]
 
@@ -175,9 +164,47 @@ def test_id_nterms(gap):
     assert gap.id_nterms() == [4]
 
 
+def test_id_nterms_proline():
+    nh = Grouped(
+        {
+            Group(
+                {Atom("N", (0, 0, 0)), Atom("H", (0, 0, 1))},
+                ConnectivityTable({(0, 1)}),
+            )
+        },
+        ConnectivityTable(set()),
+    )
+    assert nh.id_nterms() == [0]
+
+
+# Also tests rgroup_ider
 def test_bb_iter(gap):
     assert gap.bb_iter(4) == ["G", "A", "P"]
 
 
 def test_bb_iter_none(gap):
     assert gap.bb_iter(1) is None
+
+
+def test_get_pseq(gap_groups, gap_bonds):
+    assert get_pseq(gap_groups, gap_bonds) == ["G", "A", "P"]
+
+
+def test_get_pseq_no_nterm_err(no_nterm_groups, no_nterm_bonds):
+    with pytest.raises(ValueError) as err:
+        get_pseq(no_nterm_groups, no_nterm_bonds)
+    assert (
+        err.exconly()
+        == "ValueError: This is not a valid protein, as it has no potential "
+        "N-termini."
+    )
+
+
+def test_get_pseq_no_backbone_err(invalid_groups, invalid_bonds):
+    with pytest.raises(ValueError) as err:
+        get_pseq(invalid_groups, invalid_bonds)
+    assert (
+        err.exconly()
+        == "ValueError: This is not a valid protein, as the backbone could "
+        "not be found."
+    )
