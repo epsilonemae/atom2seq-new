@@ -35,3 +35,11 @@ def test_get_groups(empty_rgroup):
 
 def test_group_list(empty_rgroup):
     assert empty_rgroup.group_list() == [Group(set(), ConnectivityTable(set()))]  # noqa
+
+
+def test_add_group(empty_rgroup):
+    empty_rgroup.add_group(Group(set(), ConnectivityTable(set())))
+    assert empty_rgroup.get_groups() == {
+        Group(set(), ConnectivityTable(set())),
+        Group(set(), ConnectivityTable(set())),
+    }

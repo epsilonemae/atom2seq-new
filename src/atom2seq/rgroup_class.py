@@ -1,3 +1,5 @@
+import warnings
+
 from atom2seq.connectivity_table_class import ConnectivityTable
 from atom2seq.group_class import Group
 
@@ -130,3 +132,16 @@ class RGroup:
                         )  # noqa
         else:
             return symbol
+
+    def add_group(self, new_group: Group) -> None:
+        """Adds the given group to the R-Group."""
+        existing_idxs = {group.get_idx() for group in self._groups}
+        if existing_idxs:
+            new_idx = max(existing_idxs) + 1
+        else:
+            new_idx = 0
+        if new_group.get_idx() == -1:
+            new_group.set_idx(new_idx)
+        elif new_group.get_idx() in existing_idxs:
+            new_group.set_idx(new_idx)
+        self._groups.add(new_group)
