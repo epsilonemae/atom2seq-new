@@ -134,15 +134,14 @@ class RGroup:
             return symbol
 
     def add_group(self, new_group: Group) -> None:
-        """Adds the given group to the backbone."""
+        """Adds the given group to the R-Group."""
         existing_idxs = {group.get_idx() for group in self._groups}
-        new_idx = max(existing_idxs) + 1
+        if existing_idxs:
+            new_idx = max(existing_idxs) + 1
+        else:
+            new_idx = 0
         if new_group.get_idx() == -1:
             new_group.set_idx(new_idx)
         elif new_group.get_idx() in existing_idxs:
-            warnings.warn(
-                "The existing index is already in this backbone, so it is "
-                f"being changed to {new_idx}."
-            )
             new_group.set_idx(new_idx)
         self._groups.add(new_group)
