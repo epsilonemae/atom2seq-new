@@ -1,3 +1,5 @@
+from time import time
+
 import numpy as np
 from scipy.spatial import KDTree
 
@@ -33,29 +35,40 @@ def parser_base(contents: list[list[str | int]]) -> Mol:
     contents = new_contents
     atoms = set([Atom(listy[0], tuple(listy[1:])) for listy in contents])
     molecule = Mol(atoms, ConnectivityTable(set()))
+    print("parsed")
     bond_mol(molecule)
+    print("bonded")
     return molecule
 
 
 def bond_mol(molecule: Mol) -> None:
+    k = len(molecule.get_atoms())
     radii = {"H": 0.31, "O": 0.66, "N": 0.71, "C": 0.76, "S": 1.05}
-    max_bonds = {"H": 1, "O": 2, "N": 3, "C": 4, "S": 2}
     data = KDTree(
         np.array([list(atom.coords) for atom in molecule.get_atoms()])
     )  # noqa
     bonds_by_idx = []
     for atom in molecule.get_atoms():
         coords = list(atom.coords)
-        indices = data.query(coords, k=max_bonds[atom.symbol])[1]
+        indices = data.query(coords, k=k)[1]
         if isinstance(indices, np.ndarray):
             bonds_by_idx.append([atom.get_idx(), indices])
         else:
             bonds_by_idx.append([atom.get_idx(), [indices]])
+    i = 0
+    init_time = time()
+    new_time = init_time
     for bond in bonds_by_idx:
         idx = bond[0]
         to_bond = bond[1]
         sym1 = molecule.get_atom(idx).symbol
         for idx_to_bond in to_bond:
+            old_time = new_time
+            new_time = time()
+            i += 1
+            print(
+                f"checked {i} pairs of {len(molecule.get_atoms()) * k}: estimated time is {round(((new_time - old_time) * (len(molecule.get_atoms()) * k)) / 60)} min: currently {round((new_time - init_time)/60)} min"  # noqa
+            )
             if idx_to_bond in molecule.idx_list():
                 if idx != idx_to_bond:
                     sym2 = molecule.get_atom(idx_to_bond).symbol
