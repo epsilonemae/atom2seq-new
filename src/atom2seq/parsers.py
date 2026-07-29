@@ -41,40 +41,51 @@ def parser_base(contents: list[list[str | int]]) -> Mol:
     return molecule
 
 
+# def bond_mol(molecule: Mol) -> None:
+#     radii = {"H": 0.31, "O": 0.66, "N": 0.71, "C": 0.76, "S": 1.05}
+#     for atom1 in molecule.atom_list():
+#         sym1 = atom1.symbol
+#         for atom2 in molecule.atom_list():
+#             sym2 = atom2.symbol
+#             max_dist = 1.15 * (radii[sym1] + radii[sym2])
+#             if (
+#                 0.5
+#                 <= molecule.dist(atom1.get_idx(), atom2.get_idx())
+#                 <= max_dist  # noqa
+#             ):  # noqa
+#                 molecule.get_bonds().add_pair(
+#                     (atom1.get_idx(), atom2.get_idx())
+#                 )  # noqa
+
+
 def bond_mol(molecule: Mol) -> None:
-    k = len(molecule.get_atoms())
     radii = {"H": 0.31, "O": 0.66, "N": 0.71, "C": 0.76, "S": 1.05}
     data = KDTree(
-        np.array([list(atom.coords) for atom in molecule.get_atoms()])
+        np.array([list(atom.coords) for atom in molecule.atom_list()])
     )  # noqa
     bonds_by_idx = []
-    for atom in molecule.get_atoms():
+    for atom in molecule.atom_list():
         coords = list(atom.coords)
-        indices = data.query(coords, k=k)[1]
+        indices = data.query(coords, k=4)[1]
         if isinstance(indices, np.ndarray):
-            bonds_by_idx.append([atom.get_idx(), indices])
+            bonds_by_idx.append(indices)
         else:
-            bonds_by_idx.append([atom.get_idx(), [indices]])
-    i = 0
-    init_time = time()
-    new_time = init_time
-    for bond in bonds_by_idx:
-        idx = bond[0]
-        to_bond = bond[1]
-        sym1 = molecule.get_atom(idx).symbol
-        for idx_to_bond in to_bond:
-            old_time = new_time
-            new_time = time()
-            i += 1
-            print(
-                f"checked {i} pairs of {len(molecule.get_atoms()) * k}: estimated time is {round(((new_time - old_time) * (len(molecule.get_atoms()) * k)) / 60)} min: currently {round((new_time - init_time)/60)} min"  # noqa
-            )
-            if idx_to_bond in molecule.idx_list():
-                if idx != idx_to_bond:
-                    sym2 = molecule.get_atom(idx_to_bond).symbol
-                    max_dist = 1.1 * (radii[sym1] + radii[sym2])
-                    if 0.5 <= molecule.dist(idx, idx_to_bond) <= max_dist:
-                        molecule.get_bonds().add_pair((idx, idx_to_bond))
+            bonds_by_idx.append([indices])
+    for i in range(len(bonds_by_idx)):
+        bonds = bonds_by_idx[i]
+        for idx in bonds:
+            if idx < len(molecule.atom_list()):
+                if (not molecule.is_bond(i, idx)) and (i != idx):
+                    if (
+                        0.5
+                        <= molecule.dist(i, idx)
+                        <= 1.15
+                        * (
+                            radii[molecule.get_atoms()[i].symbol]
+                            + radii[molecule.get_atoms()[idx].symbol]
+                        )
+                    ):
+                        molecule.get_bonds().add_pair((i, idx))
 
 
 def parse_gjf(filename: str) -> Mol:
@@ -134,3 +145,14 @@ def parse_cif(filename: str) -> Mol:
     ]
 
     return parser_base(contents)
+
+
+def parse_nwc(filename: str) -> Mol:
+    contents = file_base(filename)
+
+    contents = [line.split() for line in contents]
+    new_contents = []
+    for line in contents:
+        new_contents.append([line[1], *line[3:]])
+
+    return parser_base(new_contents)

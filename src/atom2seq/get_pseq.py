@@ -25,6 +25,7 @@ class Grouped:
         return potential_nterms
 
     def bb_iter(self, current_idx: int):
+        print(f"beginning of bb_iter: {self.bonds=}")
         ch_step = False
         rgroup_idx = False
         self.backbone.append(current_idx)
@@ -71,12 +72,15 @@ class Grouped:
                                 # group is Amide
                                 to_call = gp
             if (to_call == 0) and (type(to_call) is int):
+                print(self.backbone)
                 self.rgroup_ider(rgroup_idx)
                 return self.bb_iter(to_call)
             elif to_call:
+                print(self.backbone)
                 self.rgroup_ider(rgroup_idx)
                 return self.bb_iter(to_call)
             elif to_return:
+                print(self.backbone)
                 self.rgroup_ider(rgroup_idx)
                 return self.aas
 
@@ -88,12 +92,17 @@ class Grouped:
             rgroup.add_group(self.groups[rgroup_idx])
             complete = False
             while not complete:
+                print("==========================")
+                print(rgroup)
                 old_rgroup_groups = rgroup.group_list()
                 to_add = []
                 for group in rgroup.get_groups():
+                    print(f"{group.get_idx()=}")
                     for gp in self.bonds.get_paired(group.get_idx()):
                         if gp not in self.backbone:
+                            print(f"{gp=}")
                             to_add.append(self.groups[gp])
+                            rgroup.get_bonds().add_pair((group.get_idx(), gp))
                 for group in to_add:
                     rgroup.add_group(group)
                 if rgroup.group_list() == old_rgroup_groups:

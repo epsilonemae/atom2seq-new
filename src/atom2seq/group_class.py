@@ -17,7 +17,7 @@ class Group:
                 atom.set_idx(i)
 
     def __repr__(self):
-        return f"Group({self.atom_list()}, {self._bonds})"
+        return f"Group({self.atom_list()}, {self._bonds}, {self._idx})"
 
     def __lt__(self, other):
         if len(self._atoms) == len(other.get_atoms()):

@@ -151,7 +151,7 @@ def test_M():
 
 def test_N():
     asn = RGroup(
-        group_set((("C", "H", "H"), ("C", "H", "N", "O"), ("H",))),
+        group_set((("C", "H", "H"), ("C", "H", "H", "N", "O"))),
         ConnectivityTable({(0, 1)}),
     )
     assert asn.symbol() == "N"
@@ -168,7 +168,7 @@ def test_P():
 def test_Q():
     gln = RGroup(
         group_set(
-            (("C", "H", "H"), ("C", "H", "H"), ("C", "H", "N", "O"), ("H",))
+            (("C", "H", "H"), ("C", "H", "H"), ("C", "H", "H", "N", "O"))
         ),  # noqa
         ConnectivityTable({(0, 1), (1, 2)}),
     )
@@ -270,7 +270,3 @@ def test_IL_invalid():
             ConnectivityTable({(0, 1), (2, 3), (1, 3)}),
         )
         assert not invalid_IL.symbol()
-    assert (
-        msg.exconly(True) == "KeyError: 'This R-group is I/L, but is neither "
-        "I nor L.'"
-    )

@@ -39,9 +39,8 @@ class GroupedMol(Mol):
         else:
             atom = self.get_atom(idx)
             if atom.symbol == "H":
-                print(atom)
+                print(idx)
                 print(self._bonds.get_paired(idx))
-                print(self._bonds)
                 bonded = list(self._bonds.get_paired(idx))[0]
                 self.detectAmd(bonded)
             if atom.symbol == "O":

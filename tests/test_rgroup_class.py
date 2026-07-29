@@ -14,7 +14,7 @@ def empty_rgroup():
 
 def test_repr(empty_rgroup):
     assert (
-        repr(empty_rgroup) == "RGroup([Group([], ConnectivityTable([]))], "
+        repr(empty_rgroup) == "RGroup([Group([], ConnectivityTable([]), 0)], "
         "ConnectivityTable([]))"
     )
 
