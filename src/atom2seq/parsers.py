@@ -41,51 +41,57 @@ def parser_base(contents: list[list[str | int]]) -> Mol:
     return molecule
 
 
-# def bond_mol(molecule: Mol) -> None:
-#     radii = {"H": 0.31, "O": 0.66, "N": 0.71, "C": 0.76, "S": 1.05}
-#     for atom1 in molecule.atom_list():
-#         sym1 = atom1.symbol
-#         for atom2 in molecule.atom_list():
-#             sym2 = atom2.symbol
-#             max_dist = 1.15 * (radii[sym1] + radii[sym2])
-#             if (
-#                 0.5
-#                 <= molecule.dist(atom1.get_idx(), atom2.get_idx())
-#                 <= max_dist  # noqa
-#             ):  # noqa
-#                 molecule.get_bonds().add_pair(
-#                     (atom1.get_idx(), atom2.get_idx())
-#                 )  # noqa
-
-
 def bond_mol(molecule: Mol) -> None:
     radii = {"H": 0.31, "O": 0.66, "N": 0.71, "C": 0.76, "S": 1.05}
-    data = KDTree(
-        np.array([list(atom.coords) for atom in molecule.atom_list()])
-    )  # noqa
-    bonds_by_idx = []
-    for atom in molecule.atom_list():
-        coords = list(atom.coords)
-        indices = data.query(coords, k=4)[1]
-        if isinstance(indices, np.ndarray):
-            bonds_by_idx.append(indices)
-        else:
-            bonds_by_idx.append([indices])
-    for i in range(len(bonds_by_idx)):
-        bonds = bonds_by_idx[i]
-        for idx in bonds:
-            if idx < len(molecule.atom_list()):
-                if (not molecule.is_bond(i, idx)) and (i != idx):
-                    if (
-                        0.5
-                        <= molecule.dist(i, idx)
-                        <= 1.15
-                        * (
-                            radii[molecule.get_atoms()[i].symbol]
-                            + radii[molecule.get_atoms()[idx].symbol]
-                        )
-                    ):
-                        molecule.get_bonds().add_pair((i, idx))
+    for atom1 in molecule.atom_list():
+        sym1 = atom1.symbol
+        for atom2 in molecule.atom_list():
+            sym2 = atom2.symbol
+            max_dist = 1.15 * (radii[sym1] + radii[sym2])
+            if (
+                0.5
+                <= molecule.dist(atom1.get_idx(), atom2.get_idx())
+                <= max_dist  # noqa
+            ):  # noqa
+                molecule.get_bonds().add_pair(
+                    (atom1.get_idx(), atom2.get_idx())
+                )  # noqa
+
+
+# def bond_mol(molecule: Mol) -> None:
+#     radii = {"H": 0.31, "O": 0.66, "N": 0.71, "C": 0.76, "S": 1.05}
+#     data = KDTree(
+#         np.array([list(atom.coords) for atom in molecule.atom_list()])
+#     )  # noqa
+#     bonds_by_idx = []
+#     for atom in molecule.atom_list():
+#         coords = list(atom.coords)
+#         indices = data.query(coords, k=12)[1]
+#         if isinstance(indices, np.ndarray):
+#             bonds_by_idx.append(indices)
+#         else:
+#             bonds_by_idx.append([indices])
+#     for i in range(len(bonds_by_idx)):
+#         atom1 = False
+#         for atom in molecule.atom_list():
+#             if atom.get_idx() == i:
+#                 atom1 = atom
+#         bonds = bonds_by_idx[i]
+#         for idx in bonds:
+#             atom2 = False
+#             for atom in molecule.atom_list():
+#                 if atom.get_idx() == i:
+#                     atom2 = atom
+#             if idx < len(molecule.atom_list()):
+#                 if (not molecule.get_bonds().check_pair((i, idx))) and (
+#                     i != idx
+#                 ):  # noqa
+#                     if (
+#                         0.5
+#                         <= molecule.dist(i, idx)
+#                         <= 1.15 * (radii[atom1.symbol] + radii[atom2.symbol])
+#                     ):
+#                         molecule.get_bonds().add_pair((i, idx))
 
 
 def parse_gjf(filename: str) -> Mol:
