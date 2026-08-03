@@ -41,6 +41,46 @@ You can then test the repo by running
 pytest
 ```
 
+# Repository Table of Contents
+> `docs`
+> `src`
+    > `atom2seq`
+        > `__init__.py` added by Ryan M. Richard
+        > `atom_class.py` added by Aspen A.M. Meissner
+        > `connect_groups.py` added by Aspen A.M. Meissner
+        > `connectivity_table_class.py` added by Aspen A.M. Meissner
+        > `file2seq.py` added by Aspen A.M. Meissner
+        > `get_pseq.py` added by Aspen A.M. Meissner
+        > `group_class.py` added by Aspen A.M. Meissner
+        > `grouper.py` added by Aspen A.M. Meissner
+        > `mol_class.py` added by Aspen A.M. Meissner
+        > `parsers.py` added by Aspen A.M. Meissner
+        > `rgroup_class.py` added by Aspen A.M. Meissner
+> `tests`
+    > `assets`
+        > `glycine_optimized.xyz` added by Ella Bushman
+        > `triY.nwc` added by Ella Bushman
+        > `ubiquitin_full.py` added by Aspen A.M. Meissner
+    > `test_atom_class.py` added by Aspen A.M. Meissner
+    > `test_connect_groups.py` added by Aspen A.M. Meissner
+    > `test_connectivity_table_class.py` added by Aspen A.M. Meissner
+    > `test_file2seq.py` added by Aspen A.M. Meissner
+    > `test_get_pseq.py` added by Aspen A.M. Meissner
+    > `test_group_class.py` added by Aspen A.M. Meissner
+    > `test_grouper.py` added by Aspen A.M. Meissner
+    > `test_mol_class.py` added by Aspen A.M. Meissner
+    > `test_parsers.py` added by Aspen A.M. Meissner
+    > `test_rgroup_class.py` added by Aspen A.M. Meissner
+    > `test_rgroup_symbol.py` added by Aspen A.M. Meissner
+> `.gitignore` added by Ryan M. Richard
+> `LICENSE` added by Ryan M. Richard
+> `pyproject.toml` added by Ryan M. Richard
+> `README.md` added by Ryan M. Richard
+
+# To-Do
+> Make `bond_mol` in `parsers.py` more efficient
+> Make a PDB/CIF cleanup tool (currently these cannot be run due to extraneous information like floating water molecules)
+
 # Acknowledgements
 
 This material is based upon work supported by the National Science Foundation under Grant No. 2348724.
