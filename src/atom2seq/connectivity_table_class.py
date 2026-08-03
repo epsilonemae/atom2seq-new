@@ -19,25 +19,27 @@ class ConnectivityTable:
     def __hash__(self):
         return hash(tuple(sorted(list(self._pairs))))
 
-    def get_pairs(self):
+    def get_pairs(self) -> set[tuple[int]]:
         """Returns the set of pairs within this table."""
         return self._pairs
 
-    def add_pair(self, new_pair: tuple[int]):
+    def add_pair(self, new_pair: tuple[int]) -> None:
         """Adds a given pair to this table."""
         self._pairs.add((min(new_pair), max(new_pair)))
 
-    def del_pair(self, pair_to_del: tuple[int]):
+    def del_pair(self, pair_to_del: tuple[int]) -> None:
         """Deletes a given pair from this table."""
         self._pairs.remove(pair_to_del)
 
-    def check_pair(self, pair_to_check: tuple[int]):
+    def check_pair(self, pair_to_check: tuple[int]) -> bool:
         """Checks if a given pair is in this table."""
         return (min(pair_to_check), max(pair_to_check)) in self._pairs
 
-    def get_paired(self, index):
+    def get_paired(self, index: int) -> set:
         """Returns a list of all indices paired with a given index."""
         out = set()
+        # Loops over all edges. If an edge contains the given index, adds the
+        # other index in the edge to out
         for pair in self._pairs:
             if pair[0] == index:
                 out.add(pair[1])

@@ -1,5 +1,3 @@
-import warnings
-
 from atom2seq.connectivity_table_class import ConnectivityTable
 from atom2seq.group_class import Group
 
@@ -45,9 +43,9 @@ class RGroup:
             ("H", "H", "N"),
         ): "K",
         (("C", "H", "H"), ("C", "H", "H"), ("C", "H", "H", "H"), ("S",)): "M",
-        (("C", "H", "H"), ("C", "H", "N", "O"), ("H",)): "N",
+        (("C", "H", "H"), ("C", "H", "H", "N", "O")): "N",
         (("C", "H", "H"), ("C", "H", "H"), ("C", "H", "H")): "P",
-        (("C", "H", "H"), ("C", "H", "H"), ("C", "H", "N", "O"), ("H",)): "Q",
+        (("C", "H", "H"), ("C", "H", "H"), ("C", "H", "H", "N", "O")): "Q",
         (
             ("C",),
             ("C", "H", "H"),
@@ -98,7 +96,8 @@ class RGroup:
             self._bonds == other.get_bonds()
         )  # noqa
 
-    def group_list(self):
+    def group_list(self) -> list:
+        """Returns a list of the groups within this RGroup."""
         return sorted(list(self._groups))
 
     def get_bonds(self) -> ConnectivityTable:
@@ -109,8 +108,11 @@ class RGroup:
         """Returns the set of groups."""
         return self._groups
 
-    def symbol(self):
+    def symbol(self) -> str:
+        """Returns the 1-letter code for the amino acid this RGroup contains
+        the side chain of."""
         key = []
+        # Loops over each group and gets the symbols of each atom in them.
         for group in self._groups:
             add_to_key = []
             for atom in group.get_atoms():
@@ -128,20 +130,11 @@ class RGroup:
                         return "I"
                     else:
                         raise KeyError(
-                            "This R-group is I/L, but is neither I nor L."
+                            f"This R-group ({self}) is I/L, but is neither I nor L."  # noqa
                         )  # noqa
         else:
             return symbol
 
     def add_group(self, new_group: Group) -> None:
         """Adds the given group to the R-Group."""
-        existing_idxs = {group.get_idx() for group in self._groups}
-        if existing_idxs:
-            new_idx = max(existing_idxs) + 1
-        else:
-            new_idx = 0
-        if new_group.get_idx() == -1:
-            new_group.set_idx(new_idx)
-        elif new_group.get_idx() in existing_idxs:
-            new_group.set_idx(new_idx)
         self._groups.add(new_group)
