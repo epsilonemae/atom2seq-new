@@ -58,6 +58,16 @@ pytest
         > `rgroup_class.py` added by Aspen A.M. Meissner
 > `tests`
     > `assets`
+        > `parser_tests`
+            > `water_extra_info.cif` added by Aspen A.M. Meissner
+            > `water_extra_info.pdb` added by Aspen A.M. Meissner
+            > `water_extra_lines.xyz` added by Aspen A.M. Meissner
+            > `water_no_lines.xyz` added by Aspen A.M. Meissner
+            > `water_no_number_of_atoms.xyz` added by Aspen A.M. Meissner
+            > `water.cif` added by Aspen A.M. Meissner
+            > `water.gjf` added by Aspen A.M. Meissner
+            > `water.pdb` added by Aspen A.M. Meissner
+            > `water.xyz` added by Aspen A.M. Meissner
         > `glycine_optimized.xyz` added by Ella Bushman
         > `triY.nwc` added by Ella Bushman
         > `ubiquitin_full.py` added by Aspen A.M. Meissner
