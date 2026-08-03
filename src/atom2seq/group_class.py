@@ -11,6 +11,8 @@ class Group:
         self._atoms = atoms
         self._bonds = bonds
         self._idx = -1
+        # Assigns indices to each of the atoms if and only if they didn't
+        # already have an index
         for i in range(len(self._atoms)):
             atom = sorted(list(self._atoms))[i]
             if atom.get_idx() == -1:
@@ -22,29 +24,26 @@ class Group:
     def __lt__(self, other):
         if len(self._atoms) == len(other.get_atoms()):
             if len(self._bonds) == len(other.get_bonds()):
+                # If the lengths of the sets of atoms are the same and the
+                # lengths of the ConnectivityTables of bonds are the same, then
+                # the lt is based on the lt of the first atoms that is
+                # different.
                 for i in range(len(self._atoms)):
                     self_atom = self.atom_list()[i]
                     other_atom = other.atom_list()[i]
                     if self_atom.coords != other_atom.coords:
                         return self_atom < other_atom
+            # If the lengths of the sets of atoms are the same, but the lengths
+            # of the ConnectivityTables of bonds are different, the lt is based
+            # on the lt of the lengths of the ConnectivityTables of bonds.
             else:
                 return len(self._bonds) < len(other.get_bonds())
+        # If the lengths of the sets of atoms are not the same, the lt is based
+        # on the lt of those lengths
         else:
             return len(self._atoms) < len(other.get_atoms())
 
     def __eq__(self, other):
-        print(
-            f"{self._atoms=}, {other.get_atoms()=}, are they equal? "
-            f"{(self._atoms == other.get_atoms())}"
-        )
-        print(
-            f"{self._bonds=}, {other.get_bonds()=}, are they equal? "
-            f"{(self._bonds == other.get_bonds())}"
-        )
-        print(
-            (self._atoms == other.get_atoms())
-            and (self._bonds == other.get_bonds())  # noqa
-        )  # noqa
         return (self._atoms == other.get_atoms()) and (
             self._bonds == other.get_bonds()
         )  # noqa
@@ -52,7 +51,8 @@ class Group:
     def __hash__(self):
         return hash((tuple(self.atom_list()), self._bonds))
 
-    def atom_list(self):
+    def atom_list(self) -> list:
+        """Returns a sorted list of the atoms in the Group."""
         return sorted(list(self._atoms))
 
     def dist(self, n: int, m: int) -> float:
@@ -77,10 +77,10 @@ class Group:
         """Returns the list of atoms."""
         return self._atoms
 
-    def get_idx(self):
+    def get_idx(self) -> int:
         """Returns the index of the group."""
         return self._idx
 
-    def set_idx(self, new_idx):
+    def set_idx(self, new_idx: int) -> None:
         """Sets the index of the group to the given index."""
         self._idx = new_idx

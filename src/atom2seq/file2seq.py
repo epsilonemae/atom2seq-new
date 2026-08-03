@@ -5,8 +5,9 @@ from atom2seq.parsers import parse_nwc  # noqa
 from atom2seq.parsers import parse_cif, parse_gjf, parse_pdb, parse_xyz
 
 
-def file2seq(filename: str, filetype: str):
-    print("running file2seq")
+def file2seq(filename: str, filetype: str) -> str:
+    """Takes in a filename and filetype. Reads the passed file as a protein and
+    finds its primary sequence."""
     molecule = False
     # The filetype checker is being done this way so that it can be very easily
     # expanded in the future, either by SIMCODES or by the end user.
@@ -18,22 +19,16 @@ def file2seq(filename: str, filetype: str):
         "NWC": parse_nwc,
     }
     if filetype.upper() in supported_types:
-        print("found supported type")
         molecule = supported_types[filetype.upper()](filename)
-        print("parsed")
     else:
         raise ValueError(
             f"The .{filetype.upper()} filetype is not yet supported. Try one "
             f"of the following filetypes: {(supported_types.keys())}"
         )
-    if filename.endswith("ubiquitin_full.xyz"):
-        file = open(
-            "/home/aspenamm/Documents/atom2seq-new/ubiquitin_mol.txt", "w"
-        )  # noqa
-        file.write(str(molecule))
-        file.close()
     groups = group_mol(molecule)
-    print(f"{groups=}")
     group_bonds = connect_groups(groups, molecule.get_bonds())
-    print("groups bonded")
-    return get_pseq(groups, group_bonds)
+    pseq = get_pseq(groups, group_bonds)
+    out = ""
+    for letter in pseq:
+        out += letter
+    return out

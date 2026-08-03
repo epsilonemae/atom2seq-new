@@ -22,13 +22,16 @@ class Mol:
             self._bonds == other.get_bonds()
         )  # noqa
 
-    def atom_list(self):
+    def atom_list(self) -> list:
+        """Returns a sorted list of the atoms in this molecule."""
         return sorted(list(self._atoms))
 
-    def idx_list(self):
+    def idx_list(self) -> list:
+        """Returns a list of the indices of each atom, in the same order as the
+        atom list."""
         return [atom.get_idx() for atom in self.atom_list()]
 
-    def get_atom(self, idx):
+    def get_atom(self, idx: int) -> Atom:
         """Returns the atom at the specified index."""
         return self.atom_list()[self.idx_list().index(idx)]
 

@@ -13,33 +13,29 @@ class Atom:
     def __eq__(self, other):
         # Returns True if and only if both the symbol and the coordinates are
         # the same
-        print(
-            f"{self.symbol=}, {other.symbol=}, are they equal? "
-            f"{self.symbol == other.symbol}"
-        )
-        print(
-            f"{self.coords=}, {other.coords=}, are they equal? "
-            f"{self.coords == other.coords}"
-        )
-        print((self.symbol == other.symbol) and (self.coords == other.coords))
         return (self.symbol == other.symbol) and (self.coords == other.coords)
 
     def __lt__(self, other):
         if self.coords[0] == other.coords[0]:
+            # If the X coordinates are the same and the Y coordinates are the
+            # same, bases the lt on the Z coordinates' lt.
             if self.coords[1] == other.coords[1]:
                 return self.coords[2] < other.coords[2]
+            # If the X coordinates are the same but the Y coordinates are not
+            # the same, bases the lt on the Y coordinates' lt.
             else:
                 return self.coords[1] < other.coords[1]
+        # If the X coordinates are not the same, bases the lt on their lt.
         else:
             return self.coords[0] < other.coords[0]
 
     def __hash__(self):
         return hash((self.symbol, self.coords))
 
-    def get_idx(self):
+    def get_idx(self) -> int:
         """Returns the index of the atom."""
         return self._idx
 
-    def set_idx(self, new_idx):
+    def set_idx(self, new_idx: int) -> None:
         """Sets the index of the atom to the given index."""
         self._idx = new_idx
