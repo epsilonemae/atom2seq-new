@@ -17,3 +17,6 @@ env/
 # coverage
 htmlcov/
 .coverage
+
+# build directory
+build/
